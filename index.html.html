@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deep Dive: an AI learning portal</title>
+<meta name="description" content="Dive through three ocean layers with Tully the sea turtle to learn what AI is, how to use it well, and how to use it ethically.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Tokens ============ */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --font-head:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --font-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --page:#06172f;
+  --sun:#ffd166; --sun-edge:#c99a2a; --sun-ink:#06203a;
+  --ok:#2bd08a; --bad:#ff6b7a; --glow:#5cf2e0;
+  --header-h:64px;
+
+  /* surface (hero) */
+  --sf-bg1:#d6f6f1; --sf-bg2:#8fe3dc;
+  /* zone 1: Sunlight */
+  --z1-bg1:#8fe3dc; --z1-bg2:#3bb6c4; --z1-ink:#06283f; --z1-soft:#134a63;
+  --z1-card:rgba(255,255,255,.88); --z1-edge:rgba(6,40,63,.16); --z1-inset:rgba(6,40,63,.07); --z1-hl:#0a6580;
+  /* zone 2: Twilight */
+  --z2-bg1:#19769b; --z2-bg2:#124b78; --z2-ink:#f2fbff; --z2-soft:#cfe9f5;
+  --z2-card:rgba(4,24,52,.64); --z2-edge:rgba(255,255,255,.2); --z2-inset:rgba(255,255,255,.08); --z2-hl:#8ef0ff;
+  /* zone 3: Midnight */
+  --z3-bg1:#0e3d6b; --z3-bg2:#07172f; --z3-ink:#eaf6ff; --z3-soft:#bcd6ea;
+  --z3-card:rgba(2,12,32,.64); --z3-edge:rgba(255,255,255,.18); --z3-inset:rgba(255,255,255,.07); --z3-hl:#5cf2e0;
+  /* zone 4: Trench */
+  --z4-bg1:#07172f; --z4-bg2:#030a1c; --z4-ink:#e6f4ff; --z4-soft:#b3cde2;
+  --z4-card:rgba(10,34,66,.55); --z4-edge:rgba(92,242,224,.28); --z4-inset:rgba(255,255,255,.07); --z4-hl:#5cf2e0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sf-bg1:#0b4f5c; --sf-bg2:#0a6b78;
+    --z1-bg1:#0a6b78; --z1-bg2:#0e7f92; --z1-ink:#effcff; --z1-soft:#cdeff3;
+    --z1-card:rgba(3,28,44,.68); --z1-edge:rgba(255,255,255,.2); --z1-inset:rgba(255,255,255,.08); --z1-hl:#8ef0ff;
+  }
+}
+:root[data-theme="dark"]{
+  --sf-bg1:#0b4f5c; --sf-bg2:#0a6b78;
+  --z1-bg1:#0a6b78; --z1-bg2:#0e7f92; --z1-ink:#effcff; --z1-soft:#cdeff3;
+  --z1-card:rgba(3,28,44,.68); --z1-edge:rgba(255,255,255,.2); --z1-inset:rgba(255,255,255,.08); --z1-hl:#8ef0ff;
+}
+.z0{--bg1:var(--sf-bg1);--bg2:var(--sf-bg2);--ink:var(--z1-ink);--soft:var(--z1-soft);--card:var(--z1-card);--edge:var(--z1-edge);--inset:var(--z1-inset);--hl:var(--z1-hl)}
+.z1{--bg1:var(--z1-bg1);--bg2:var(--z1-bg2);--ink:var(--z1-ink);--soft:var(--z1-soft);--card:var(--z1-card);--edge:var(--z1-edge);--inset:var(--z1-inset);--hl:var(--z1-hl)}
+.z2{--bg1:var(--z2-bg1);--bg2:var(--z2-bg2);--ink:var(--z2-ink);--soft:var(--z2-soft);--card:var(--z2-card);--edge:var(--z2-edge);--inset:var(--z2-inset);--hl:var(--z2-hl)}
+.z3{--bg1:var(--z3-bg1);--bg2:var(--z3-bg2);--ink:var(--z3-ink);--soft:var(--z3-soft);--card:var(--z3-card);--edge:var(--z3-edge);--inset:var(--z3-inset);--hl:var(--z3-hl)}
+.z4{--bg1:var(--z4-bg1);--bg2:var(--z4-bg2);--ink:var(--z4-ink);--soft:var(--z4-soft);--card:var(--z4-card);--edge:var(--z4-edge);--inset:var(--z4-inset);--hl:var(--z4-hl)}
+
+/* ============ Base ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{background:#06172f;scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+body{margin:0;background:var(--page);color:#eaf6ff;font:400 1.0625rem/1.6 var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:var(--font-head);line-height:1.08;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+img,svg{max-width:100%}
+button{font:inherit}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-60px;background:#fff;color:#06203a;padding:10px 16px;border-radius:10px;z-index:200;font-weight:700}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 8px)}
+:focus-visible{outline:3px solid #06203a;outline-offset:2px;box-shadow:0 0 0 6px #fff;border-radius:8px}
+main:focus{outline:none;box-shadow:none}
+
+/* ============ Header ============ */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;display:flex;align-items:center;gap:18px;min-height:var(--header-h);padding:8px clamp(14px,3vw,32px);background:rgba(4,16,36,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#eaf8ff;border-bottom:1px solid rgba(143,227,220,.2)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 1.25rem var(--font-head);letter-spacing:-.02em;margin-right:auto}
+.logo svg{width:46px;height:29px;flex:none}
+.logo small{display:block;font:500 .72rem var(--font-body);letter-spacing:0;color:#9fd6e3;margin-top:-2px}
+.nav{display:flex;gap:4px}
+.nav a{text-decoration:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:.96rem;color:#cfeaf3}
+.nav a:hover{background:rgba(255,255,255,.1)}
+.nav a[aria-current="page"]{background:#eaf8ff;color:#06203a}
+.hud{display:flex;align-items:center;gap:10px;text-decoration:none;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(143,227,220,.25)}
+.hud-name{font-weight:700;font-size:.92rem}
+.hud-bar{width:84px;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.hud-bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd166,#ffb347);border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.hud-xp{font-weight:700;font-size:.9rem;color:var(--sun);font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .logo small{display:none}.hud-bar{display:none}.nav a{padding:8px 10px}.top{gap:8px}.hud-name{display:none}
+}
+@media (max-width:480px){ .logo span.word{display:none} }
+
+/* ============ Shared pieces ============ */
+.wrap{width:100%;max-width:1080px;margin-inline:auto;padding-inline:clamp(20px,5vw,40px);position:relative;z-index:2}
+.wrap.narrow{max-width:800px}
+.card{background:var(--card);color:var(--ink);border:1px solid var(--edge);border-radius:22px;padding:clamp(20px,3vw,32px);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 14px 40px rgba(2,12,30,.2)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;background:var(--inset);border:1px solid var(--edge);font-weight:600;font-size:.88rem;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:999px;border:2px solid transparent;font-weight:700;cursor:pointer;text-decoration:none;color:inherit;background:transparent;transition:transform .12s,box-shadow .12s,background .15s}
+.btn.primary{background:var(--sun);color:var(--sun-ink);box-shadow:0 4px 0 var(--sun-edge)}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--sun-edge)}
+.btn.primary:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sun-edge)}
+.btn.ghost{border-color:currentColor}
+.btn.ghost:hover{background:var(--inset)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.crumbs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-weight:600;font-size:.95rem;margin-bottom:20px;color:var(--ink)}
+.crumbs a{text-decoration:none;border-bottom:2px solid var(--edge)}
+.crumbs a:hover{border-color:currentColor}
+.hex{display:grid;place-items:center;width:44px;height:50px;flex:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--sun);color:var(--sun-ink);font:800 1.05rem var(--font-head)}
+.hex.done{background:var(--ok)}
+.hex.lock{background:rgba(120,140,160,.55);color:#fff;font-size:1rem}
+.hex.idle{background:var(--inset);color:var(--ink);box-shadow:inset 0 0 0 2px var(--edge)}
+.bubbles-host{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.bub{position:absolute;bottom:-30px;width:var(--s);height:var(--s);border-radius:50%;border:2px solid rgba(255,255,255,.55);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.55),rgba(255,255,255,0) 60%);opacity:0;animation:rise var(--d) linear var(--t) infinite}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:.55}90%{opacity:.35}100%{transform:translate(var(--x),-900px);opacity:0}}
+
+/* ============ Hero ============ */
+.view{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);min-height:calc(100vh - var(--header-h));padding:clamp(32px,5vw,56px) 0 clamp(64px,8vw,110px)}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);padding:clamp(40px,7vw,84px) 0 clamp(90px,11vw,150px)}
+.rays{position:absolute;inset:-10% -10% 0;background:repeating-conic-gradient(from 195deg at 72% -12%,rgba(255,255,255,.32) 0 5deg,transparent 5deg 15deg);-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%);opacity:.45;animation:sway 16s ease-in-out infinite alternate;pointer-events:none}
+@keyframes sway{to{transform:rotate(5deg) scale(1.08)}}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,64px);align-items:center}
+.hero h1{font-size:clamp(2.7rem,6.6vw,5.1rem);font-weight:800;letter-spacing:-.035em;line-height:.98}
+.hero .lede{margin-top:20px;font-size:clamp(1.05rem,2vw,1.28rem);max-width:34em;line-height:1.55}
+.hero .btn-row{margin-top:30px}
+.hero-facts{list-style:none;margin:34px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.hero-facts li{padding:8px 16px;border-radius:999px;background:var(--inset);border:1px solid var(--edge);font-weight:600;font-size:.95rem}
+.hero-turtle{position:relative;display:grid;place-items:center;min-height:300px}
+.hero-turtle .big{width:min(100%,520px);height:auto;animation:bob 6s ease-in-out infinite;filter:drop-shadow(0 24px 24px rgba(6,40,63,.25))}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-16px) rotate(1.5deg)}}
+.say{position:absolute;top:2%;left:2%;max-width:230px;padding:12px 16px;background:#fff;color:#06283f;border-radius:20px 20px 20px 4px;font-weight:600;font-size:.98rem;line-height:1.4;box-shadow:0 10px 24px rgba(6,40,63,.2)}
+.say b{font-family:var(--font-head)}
+.wave{position:absolute;left:0;bottom:-1px;width:100%;height:clamp(40px,6vw,84px);display:block}
+.wave-top{position:absolute;left:0;top:-1px;width:100%;height:clamp(36px,5vw,70px);display:block;z-index:2;transform:scaleY(-1)}
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-turtle{order:-1;min-height:200px}
+  .say{position:relative;top:auto;left:auto;margin-bottom:6px}
+  .hero-turtle{display:flex;flex-direction:column;align-items:flex-start}
+  .hero-turtle .big{width:min(100%,360px);align-self:center}
+}
+
+/* ============ How it works ============ */
+.how{background:var(--z1-bg1);color:var(--z1-ink);padding:clamp(20px,4vw,40px) 0 clamp(70px,9vw,110px)}
+.how h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:26px}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
+.steps li{position:relative;padding:22px 22px 22px 22px;background:var(--z1-card);border:1px solid var(--z1-edge);border-radius:26px 12px 26px 12px;counter-increment:s}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:40px;height:44px;margin-bottom:12px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--sun);color:var(--sun-ink);font:800 1.05rem var(--font-head)}
+.steps h3{font-size:1.2rem;margin-bottom:6px}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+
+/* ============ Zones (home) ============ */
+.zone{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);padding:clamp(80px,11vw,140px) 0 clamp(70px,9vw,120px)}
+.zone.z2 .wave-top path{fill:var(--z1-bg2)}
+.zone.z3 .wave-top path{fill:var(--z2-bg2)}
+.zone.z4 .wave-top path{fill:var(--z3-bg2)}
+.zone-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(28px,5vw,64px);align-items:start}
+.zone-head .chip{margin-bottom:16px}
+.zone-head h2{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.03em}
+.zone-head .tag{margin-top:6px;font:600 1.1rem var(--font-head);color:var(--hl)}
+.zone-head .blurb{margin-top:16px;max-width:30em}
+.zone-head .meta{margin-top:18px;font-weight:600;color:var(--ink)}
+.zone-head .btn-row{margin-top:24px}
+.creature{position:absolute;color:var(--hl);opacity:.55;pointer-events:none;z-index:1}
+.creature.fish{width:84px;right:6%;top:18%;animation:drift 12s ease-in-out infinite alternate}
+.creature.fish.two{width:54px;right:22%;top:9%;animation-duration:9s;opacity:.4}
+.creature.jelly{width:62px;right:9%;top:12%;animation:pulse 5s ease-in-out infinite}
+.creature.angler{width:124px;right:6%;top:10%;opacity:.8;animation:drift 14s ease-in-out infinite alternate}
+.creature.orb{width:120px;height:120px;right:10%;top:14%;border-radius:50%;background:radial-gradient(circle,rgba(92,242,224,.55),rgba(92,242,224,0) 68%);animation:pulse 4s ease-in-out infinite}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-46px)}}
+@keyframes pulse{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.06)}}
+@media (max-width:860px){.zone-grid{grid-template-columns:1fr}.creature{display:none}}
+.stones{list-style:none;margin:0;padding:0;display:grid;gap:12px;position:relative}
+.stone{display:flex;align-items:center;gap:16px;padding:14px 20px 14px 14px;background:var(--card);border:1px solid var(--edge);border-radius:30px 12px 30px 12px;color:var(--ink);text-decoration:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,border-color .15s}
+a.stone:hover{transform:translateX(6px);border-color:var(--hl)}
+.stone strong{display:block;font:700 1.08rem var(--font-head);letter-spacing:-.01em}
+.stone span.sub{font-size:.9rem;color:var(--soft)}
+.stone .grow{flex:1;min-width:0}
+.stone .xp{font-weight:700;font-size:.88rem;color:var(--hl);white-space:nowrap}
+.locked-list{position:relative}
+.locked-list.on .stones{filter:blur(3.5px);opacity:.55;user-select:none;pointer-events:none}
+.door{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;z-index:3}
+.door div{background:rgba(3,12,30,.82);color:#eaf6ff;border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:22px 26px;max-width:330px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.door .lockicon{font-size:1.8rem;display:block;margin-bottom:6px}
+.door strong{font:700 1.15rem var(--font-head);display:block;margin-bottom:4px}
+.state-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;font-weight:700;font-size:.88rem}
+.state-pill.cleared{background:var(--ok);color:#04301f}
+.state-pill.open{background:var(--sun);color:var(--sun-ink)}
+.state-pill.locked{background:rgba(255,255,255,.14);color:var(--ink);border:1px solid var(--edge)}
+
+/* ============ Dive gauge ============ */
+.gauge{position:fixed;left:10px;top:calc(var(--header-h) + env(safe-area-inset-top,0px) + 28px);bottom:calc(28px + env(safe-area-inset-bottom,0px));width:44px;z-index:40;pointer-events:none}
+.g-track{position:absolute;left:50%;top:0;bottom:0;width:6px;transform:translateX(-50%);border-radius:99px;background:linear-gradient(180deg,#bff3ee,#3bb6c4 25%,#19769b 45%,#0e3d6b 70%,#030a1c);box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+.g-turtle{position:absolute;left:50%;top:0;width:40px;transform:translate(-50%,-50%)}
+.g-turtle svg{width:40px;height:25px;display:block;transform:rotate(90deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.g-depth{position:absolute;left:34px;top:50%;transform:translateY(-50%);background:rgba(4,16,36,.9);color:#eaf8ff;padding:3px 10px;border-radius:99px;font-weight:700;font-size:.78rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.g-label{position:absolute;left:34px;transform:translateY(-50%);font-weight:600;font-size:.74rem;color:#fff;background:rgba(4,16,36,.55);padding:1px 8px;border-radius:99px;display:none;white-space:nowrap}
+.g-tick{position:absolute;left:50%;width:16px;height:2px;transform:translate(-50%,-50%);background:rgba(255,255,255,.85)}
+@media (min-width:1360px){.g-label{display:block}.g-depth{left:36px;top:calc(50% + 20px)}}
+@media (max-width:699px){.gauge{display:none}}
+@media (min-width:700px){body.has-gauge .wrap{padding-left:max(clamp(20px,5vw,40px),72px)}}
+
+/* ============ Layer path ============ */
+.page-head{margin-bottom:28px}
+.page-head h1{font-size:clamp(2.2rem,5.4vw,3.8rem);font-weight:800;letter-spacing:-.03em;margin-top:14px}
+.page-head p.lede{margin-top:12px;max-width:36em;font-size:1.1rem}
+.progress-line{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+.path{display:grid;gap:14px;margin-top:8px}
+.path .stone{padding:18px 24px 18px 18px}
+.path .stone .btn{min-height:40px;padding:0 18px;font-size:.95rem}
+.next-box{margin-top:26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.next-box h2{font-size:1.5rem}
+
+/* ============ Lesson ============ */
+.lesson-head h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.03em;margin-top:14px}
+.dots{display:flex;gap:8px;margin-top:16px}
+.dots i{width:34px;height:8px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge)}
+.dots i.on{background:var(--ok);box-shadow:none}
+.dots i.cur{background:var(--sun);box-shadow:none}
+.tully{display:flex;gap:14px;align-items:flex-start;margin:26px 0}
+.tully svg{width:76px;height:48px;flex:none;margin-top:6px}
+.tully p{background:#fff;color:#06283f;padding:14px 18px;border-radius:6px 20px 20px 20px;font-weight:600;line-height:1.45;box-shadow:0 8px 20px rgba(2,12,30,.2)}
+.tully p b{font-family:var(--font-head)}
+.reading{background:var(--card);color:var(--ink);border:1px solid var(--edge);border-radius:22px;padding:clamp(22px,3.5vw,38px);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.reading h3{font-size:1.4rem;margin:28px 0 8px}
+.reading h3:first-child{margin-top:0}
+.reading p{max-width:62ch;margin-top:8px}
+.reading p+p{margin-top:12px}
+.reading ul.plain{margin:10px 0 0;padding-left:1.2em;max-width:62ch}
+.reading ul.plain li{margin:6px 0}
+.reading strong{font-weight:700}
+.keypoint{margin-top:22px;padding:16px 20px;border-left:6px solid var(--hl);background:var(--inset);border-radius:6px 18px 18px 6px;font-weight:600}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.compare>div{padding:16px 18px;border-radius:16px;background:var(--inset);border:1px solid var(--edge)}
+.compare .cmp-label{font-weight:700;font-size:.9rem;margin-bottom:6px;color:var(--hl)}
+.compare .weak .cmp-label{color:var(--bad)}
+.tide{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.tide li{display:flex;gap:14px;align-items:center;padding:12px 16px;background:var(--inset);border-radius:16px;border:1px solid var(--edge)}
+.tide b{display:grid;place-items:center;width:42px;height:46px;flex:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--sun);color:var(--sun-ink);font:800 1.2rem var(--font-head)}
+.zones3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.zones3>div{padding:14px 16px;border-radius:16px;background:var(--inset);border:1px solid var(--edge)}
+.zones3 .g{color:#2bd08a}.zones3 .y{color:#ffd166}.zones3 .r{color:#ff6b7a}
+.zones3 h4{font-size:1.05rem;margin-bottom:6px}
+.zones3 ul{margin:0;padding-left:1.1em;font-size:.95rem}
+@media (max-width:700px){.compare,.zones3{grid-template-columns:1fr}}
+
+/* Activities */
+.activity{margin-top:26px}
+.activity .act-label{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--hl);margin-bottom:8px}
+.act-title{font-size:1.5rem}
+.act-help{margin-top:6px;color:var(--soft);max-width:60ch}
+.flash{margin-top:18px;padding:22px;background:var(--inset);border:1px solid var(--edge);border-radius:20px}
+.flash-count{font-weight:600;font-size:.9rem;color:var(--soft)}
+.flash-q{font:700 1.3rem/1.3 var(--font-head);margin:6px 0 16px;letter-spacing:-.01em}
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.btn.choice{background:var(--card);border-color:var(--edge);color:var(--ink)}
+.btn.choice:hover:not([disabled]){border-color:var(--hl)}
+.btn.choice[disabled]{opacity:.6}
+.btn.choice.right{opacity:1;background:var(--ok);border-color:var(--ok);color:#04301f}
+.btn.choice.wrong{opacity:1;background:var(--bad);border-color:var(--bad);color:#3a0710}
+.btn.choice.green{box-shadow:inset 0 -4px 0 #2bd08a}.btn.choice.yellow{box-shadow:inset 0 -4px 0 #ffd166}.btn.choice.red{box-shadow:inset 0 -4px 0 #ff6b7a}
+.fb{margin-top:16px;display:grid;gap:12px;justify-items:start}
+.fb .good{color:var(--ink)}.fb .good strong{color:var(--ok)}
+.fb .miss strong{color:var(--bad)}
+.z1 .fb .good strong{color:#0b7a4f}.z1 .fb .miss strong{color:#b3202f}
+.result{text-align:left}
+.msg-row{display:grid;gap:10px;margin-top:16px}
+.msg{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--inset);border:1px solid var(--edge);border-radius:16px}
+.msg p{flex:1 1 260px;font-weight:500}
+.seg{display:inline-flex;border-radius:99px;border:2px solid var(--edge);overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--ink);padding:8px 16px;font-weight:700;cursor:pointer;min-height:40px}
+.seg button[aria-pressed="true"].sp{background:var(--bad);color:#3a0710}
+.seg button[aria-pressed="true"].hm{background:var(--ok);color:#04301f}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips span{padding:4px 12px;border-radius:99px;font-weight:600;font-size:.9rem;border:1px solid var(--edge);background:var(--inset)}
+.chips.spam span{border-color:var(--bad)}.chips.ham span{border-color:var(--ok)}
+.verdict{margin-top:12px;padding:14px 16px;background:var(--inset);border-radius:16px;border:1px solid var(--edge)}
+.bars{display:grid;gap:12px;margin-top:18px}
+.bar-row{display:grid;grid-template-columns:96px 1fr 56px;gap:12px;align-items:center;font-weight:600}
+.bar{height:18px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#3bb6c4,#5cf2e0);transition:width .35s}
+.bar i.hot{background:linear-gradient(90deg,#ffb347,#ffd166)}
+.bar i.pick{background:linear-gradient(90deg,#ff9bb0,#ffd166)}
+.bar-row b{font-variant-numeric:tabular-nums;text-align:right}
+.slider{display:grid;gap:10px;margin-top:18px;font-weight:600}
+input[type=range]{width:100%;accent-color:#ffd166;height:28px}
+.sentence{font:700 1.35rem/1.35 var(--font-head);margin:14px 0 14px;letter-spacing:-.01em}
+.sentence u{display:inline-block;min-width:90px;border-bottom:4px dotted var(--hl);text-decoration:none}
+.fine{margin-top:14px;font-size:.9rem;color:var(--soft)}
+.field{display:grid;gap:6px;margin-top:16px}
+.field label{font-weight:700;display:flex;align-items:center;gap:10px}
+.field label b{display:inline-grid;place-items:center;width:28px;height:30px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--sun);color:var(--sun-ink);font:800 .9rem var(--font-head)}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--inset);border:2px solid var(--edge);border-radius:14px;padding:12px 14px;resize:vertical}
+textarea::placeholder,input[type=text]::placeholder{color:var(--soft);opacity:.75}
+textarea:focus,input[type=text]:focus{border-color:var(--hl)}
+.check{display:flex;gap:12px;align-items:center;margin-top:16px;font-weight:600;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:#2bd08a;flex:none}
+.meter{display:flex;gap:6px;margin-top:18px}
+.meter i{flex:1;height:12px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge);transition:background .25s}
+.meter i.on{background:linear-gradient(90deg,#ffd166,#2bd08a);box-shadow:none}
+.preview{margin-top:16px;padding:16px 18px;border-radius:16px;background:var(--inset);border:1px dashed var(--edge);white-space:pre-wrap;font-size:.98rem;min-height:70px}
+.claims{display:grid;gap:10px;margin-top:16px}
+.claim{text-align:left;padding:14px 18px;border-radius:16px;border:2px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;font-weight:500;line-height:1.45}
+.claim:hover:not([disabled]){border-color:var(--hl)}
+.claim[disabled]{cursor:default}
+.claim.right{background:var(--bad);border-color:var(--bad);color:#3a0710;font-weight:700}
+.claim.safe{opacity:.8}
+.ai-box{margin-top:14px;padding:6px 0}
+
+/* Finish bar */
+.finish{margin-top:26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:18px 22px;border-radius:22px;background:var(--card);border:1px solid var(--edge);color:var(--ink)}
+.finish .hint{color:var(--soft);font-weight:500;max-width:34em}
+.finish .done-msg{font-weight:700;display:flex;align-items:center;gap:10px}
+.finish .done-msg::before{content:"✓";display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ok);color:#04301f}
+
+/* ============ Quiz ============ */
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:600;color:var(--soft)}
+.q-dots{display:flex;gap:6px}
+.q-dots i{width:24px;height:8px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge)}
+.q-dots i.on{background:var(--ok);box-shadow:none}.q-dots i.cur{background:var(--sun);box-shadow:none}
+.q-text{font-size:clamp(1.4rem,3vw,1.9rem);margin:18px 0 20px}
+.opts{display:grid;gap:12px}
+.opt{text-align:left;padding:16px 20px;border-radius:18px;border:2px solid var(--edge);background:var(--inset);color:var(--ink);cursor:pointer;font-weight:600;line-height:1.4;transition:transform .12s,border-color .12s}
+.opt:hover:not([disabled]){border-color:var(--hl);transform:translateX(4px)}
+.opt[disabled]{cursor:default}
+.opt.right{background:var(--ok);border-color:var(--ok);color:#04301f}
+.opt.wrong{background:var(--bad);border-color:var(--bad);color:#3a0710}
+.q-fb{margin-top:20px;display:grid;gap:14px;justify-items:start}
+.score-big{font:800 clamp(3rem,9vw,5rem)/1 var(--font-head);letter-spacing:-.04em}
+.score-card{display:grid;gap:14px;justify-items:start}
+
+/* ============ Dive log ============ */
+.log-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+.level-card{display:grid;gap:14px}
+.level-card .lv{font:800 clamp(2.2rem,5vw,3.2rem)/1 var(--font-head);letter-spacing:-.03em}
+.xpbar{height:16px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge);overflow:hidden}
+.xpbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ffd166,#ffb347)}
+.ring-card{display:grid;place-items:center;text-align:center;gap:6px}
+.ring{position:relative;width:150px;height:150px}
+.ring svg{width:150px;height:150px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font:800 2rem var(--font-head)}
+.layer-rows{display:grid;gap:14px;margin-top:20px}
+.lrow{display:grid;grid-template-columns:200px 1fr auto;gap:16px;align-items:center}
+.lrow strong{font:700 1.1rem var(--font-head)}
+.segbar{display:flex;gap:6px}
+.segbar i{flex:1;height:14px;border-radius:99px;background:var(--inset);box-shadow:inset 0 0 0 1px var(--edge)}
+.segbar i.on{background:var(--ok);box-shadow:none}
+.segbar i.q.on{background:var(--sun)}
+.section-title{font-size:1.5rem;margin:34px 0 6px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:16px}
+.badge{display:grid;justify-items:center;text-align:center;gap:8px;padding:18px 12px;border-radius:24px 10px 24px 10px;background:var(--card);border:1px solid var(--edge)}
+.badge .gem{display:grid;place-items:center;width:76px;height:84px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#ffe29a,#ffb347);font-size:2rem}
+.badge strong{font:700 1rem var(--font-head)}
+.badge small{color:var(--soft);font-size:.84rem;line-height:1.3}
+.badge.off .gem{background:var(--inset);filter:grayscale(1);opacity:.55;box-shadow:inset 0 0 0 2px var(--edge)}
+.badge.off{opacity:.85}
+.name-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-top:16px}
+.name-row .field{margin:0;flex:1 1 240px}
+@media (max-width:820px){.log-grid{grid-template-columns:1fr}.lrow{grid-template-columns:1fr}}
+
+/* ============ Capstone ============ */
+.pledges{display:grid;gap:10px;margin-top:18px}
+.pledge{display:flex;gap:14px;align-items:center;padding:14px 18px;border-radius:18px;border:2px solid var(--edge);background:var(--inset);cursor:pointer;font-weight:600}
+.pledge input{width:22px;height:22px;accent-color:#5cf2e0;flex:none}
+.pledge:has(input:checked){border-color:var(--hl);background:var(--card)}
+.cert{margin-top:26px;background:#fff8e4;color:#06283f;border-radius:20px;padding:clamp(26px,5vw,52px);text-align:center;border:10px double #19769b;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.cert svg.t{width:120px;height:76px}
+.cert h2{font-size:clamp(1.9rem,5vw,3rem);margin:8px 0 4px}
+.cert .cert-small{font-weight:700;color:#19769b}
+.cert .cert-name{font:800 clamp(2rem,6vw,3.4rem)/1.1 var(--font-head);margin:14px 0;border-bottom:3px solid #ffd166;display:inline-block;padding:0 18px 4px;letter-spacing:-.02em}
+.cert ul{list-style:none;margin:16px auto 0;padding:0;max-width:30em;display:grid;gap:6px;text-align:left}
+.cert ul li::before{content:"✓ ";color:#0b7a4f;font-weight:800}
+.cert .cert-foot{margin-top:22px;font-weight:600;color:#134a63}
+
+/* ============ Toast / modal ============ */
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:120;display:grid;gap:8px;justify-items:center;pointer-events:none;width:max-content;max-width:92vw}
+.toast{padding:10px 20px;border-radius:99px;background:#06172f;color:#eaf8ff;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25);animation:toastin .3s ease-out}
+.toast.xp{background:#ffd166;color:#06203a;border-color:#c99a2a}
+.toast.badge{background:#0f4170;border-color:#5cf2e0}
+.toast.out{opacity:0;transform:translateY(8px);transition:.35s}
+@keyframes toastin{from{transform:translateY(14px);opacity:0}}
+dialog{border:0;padding:0;background:transparent;color:#eaf6ff;max-width:min(92vw,520px);width:100%}
+dialog::backdrop{background:rgba(2,8,22,.72);backdrop-filter:blur(4px)}
+.modal-card{position:relative;overflow:hidden;background:linear-gradient(180deg,#0e3d6b,#07172f);border:1px solid rgba(92,242,224,.4);border-radius:28px;padding:30px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal-card svg.t{width:150px;height:95px;margin:0 auto;display:block;animation:bob 5s ease-in-out infinite}
+.modal-card h2{font-size:clamp(1.7rem,5vw,2.3rem);margin-top:10px}
+.modal-card p{margin-top:10px;color:#cfe3f2}
+.modal-card .btn-row{justify-content:center;margin-top:22px}
+.pop{position:absolute;left:50%;top:40%;width:10px;height:10px;border-radius:50%;pointer-events:none;animation:pop .9s ease-out forwards}
+@keyframes pop{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+
+/* ============ Footer ============ */
+.foot{background:#030a1c;color:#9fb9d0;padding:36px clamp(20px,5vw,40px) 44px;text-align:center;font-size:.95rem}
+.foot p{max-width:46em;margin:0 auto}
+.foot .foot-logo{display:flex;justify-content:center;margin-bottom:12px}
+.foot svg{width:64px;height:40px}
+
+/* ============ Turtle flippers ============ */
+.t-flip-f{transform-box:fill-box;transform-origin:12% 8%;animation:flapf 2.8s ease-in-out infinite}
+.t-flip-r{transform-box:fill-box;transform-origin:85% 8%;animation:flapr 2.8s ease-in-out infinite}
+.t-flip-b{transform-box:fill-box;transform-origin:80% 5%;animation:flapr 2.8s ease-in-out infinite reverse}
+@keyframes flapf{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(16deg)}}
+@keyframes flapr{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-12deg)}}
+
+/* ============ Print (certificate) ============ */
+@media print{
+  html,body{background:#fff!important}
+  .top,.gauge,.foot,.no-print,.crumbs,.bubbles-host,#toasts{display:none!important}
+  .view{background:#fff!important;padding:0!important}
+  .cert{box-shadow:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .bub{display:none}
+}
+noscript{display:block;padding:40px;text-align:center}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="tully" viewBox="0 0 270 170">
+      <path class="t-flip-b" d="M96 108 C82 124 78 144 84 158 C100 154 114 138 120 118Z" fill="#3E9E57"/>
+      <path d="M46 100 C32 100 20 104 10 114 C26 118 40 116 52 108Z" fill="#4DAF63"/>
+      <path d="M194 72 C212 62 226 62 240 66 L240 106 C224 106 208 102 194 96Z" fill="#6FCB82"/>
+      <ellipse cx="240" cy="84" rx="27" ry="22" fill="#7BD98D"/>
+      <path d="M38 96 H212 C212 114 186 124 125 124 C64 124 38 114 38 96Z" fill="#F6E3A8"/>
+      <path d="M40 98 C40 48 84 20 128 20 C176 20 210 52 210 98 Z" fill="#2E8B57"/>
+      <path d="M108 42 L148 42 L166 66 L148 90 L108 90 L90 66 Z" fill="#46AE70" stroke="#1E6B42" stroke-width="3" stroke-linejoin="round"/>
+      <g stroke="#1E6B42" stroke-width="3" stroke-linecap="round" fill="none">
+        <path d="M90 66 L52 76"/><path d="M166 66 L204 76"/><path d="M108 90 L96 98"/><path d="M148 90 L160 98"/><path d="M108 42 L94 28"/><path d="M148 42 L164 28"/>
+      </g>
+      <path d="M62 62 C74 40 96 30 114 28" stroke="#fff" stroke-opacity=".38" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path class="t-flip-f" d="M150 106 C170 108 196 128 214 152 C198 162 172 156 156 140 C142 126 140 112 150 106Z" fill="#4DAF63" stroke="#2E8B57" stroke-width="2"/>
+      <path class="t-flip-r" d="M72 108 C56 114 42 130 38 148 C56 150 74 140 86 122Z" fill="#4DAF63" stroke="#2E8B57" stroke-width="2"/>
+      <circle cx="250" cy="76" r="6.5" fill="#fff"/><circle cx="252" cy="76" r="3.4" fill="#0b2338"/><circle cx="253.2" cy="74.6" r="1.1" fill="#fff"/>
+      <path d="M246 92 C252 97 261 96 265 90" stroke="#1E5A3A" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <circle cx="237" cy="90" r="5" fill="#FF9AA8" opacity=".55"/>
+    </symbol>
+    <symbol id="fish" viewBox="0 0 80 44">
+      <path d="M8 22 C20 4 46 2 62 18 L78 6 L74 22 L78 38 L62 26 C46 42 20 40 8 22Z" fill="currentColor"/>
+      <circle cx="22" cy="19" r="3.2" fill="#fff"/><circle cx="22.8" cy="19" r="1.5" fill="#06283f"/>
+    </symbol>
+    <symbol id="jelly" viewBox="0 0 60 96">
+      <path d="M6 42 C6 6 54 6 54 42 C46 38 38 46 30 42 C22 46 14 38 6 42Z" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M14 44 C8 56 20 62 13 78"/><path d="M24 45 C18 60 30 68 23 90"/><path d="M36 45 C42 60 30 68 37 90"/><path d="M46 44 C52 56 40 62 47 78"/>
+      </g>
+    </symbol>
+    <symbol id="angler" viewBox="0 0 120 90">
+      <path d="M22 52 C22 24 70 16 94 40 C108 54 100 78 72 80 C44 84 22 74 22 52Z" fill="currentColor"/>
+      <path d="M24 52 L4 38 L8 58 L4 72Z" fill="currentColor"/>
+      <path d="M68 28 C68 8 90 2 102 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="102" cy="10" r="13" fill="#5cf2e0" opacity=".3"/><circle cx="102" cy="10" r="6" fill="#5cf2e0"/>
+      <circle cx="84" cy="50" r="6.5" fill="#fff"/><circle cx="86" cy="50" r="3" fill="#06172f"/>
+      <path d="M90 64 L94 57 L98 65 L102 58 L106 66" stroke="#fff" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <a class="logo" href="#/" aria-label="Deep Dive home">
+    <svg viewBox="0 0 270 170" aria-hidden="true"><use href="#tully" width="270" height="170"/></svg>
+    <span class="word">Deep Dive<small>AI learning portal</small></span>
+  </a>
+  <nav class="nav" aria-label="Main">
+    <a href="#/" data-nav="home">Dive map</a>
+    <a href="#/log" data-nav="log">Dive log</a>
+  </nav>
+  <a class="hud" id="hud" href="#/log" aria-label="Your level and XP. Open dive log."></a>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer class="foot">
+  <div class="foot-logo"><svg viewBox="0 0 270 170" aria-hidden="true"><use href="#tully" width="270" height="170"/></svg></div>
+  <p>Deep Dive is an AI learning portal for grades 9 to 12. Your XP, badges, and progress are saved only in this browser, and nothing you type leaves your device.</p>
+</footer>
+
+<div id="toasts" aria-live="polite" role="status"></div>
+<dialog id="modal" aria-labelledby="modal-title"></dialog>
+<noscript>This learning portal needs JavaScript turned on to work.</noscript>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   Helpers
+============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TURTLE = (cls = '') => `<svg class="${cls}" viewBox="0 0 270 170" aria-hidden="true"><use href="#tully" width="270" height="170"/></svg>`;
+
+/* ============================================================
+   Content
+============================================================ */
+const PASS = 3;
+
+const LAYERS = [
+{
+  id: 1, name: 'Sunlight Zone', depth: '0 to 200 m', tag: 'AI foundations',
+  blurb: 'Where the light still reaches and everything is easy to see. Learn what AI really is, how machines learn from data, and how chatbots write.',
+  lessons: [
+    { id: '1-1', title: 'What counts as AI?', mins: 6, act: 'sortAI',
+      tip: `<b>Tully says:</b> Forget the movie robots. Most AI is a very good pattern-spotter hiding inside apps you already use.`,
+      body: `
+        <h3>AI in one sentence</h3>
+        <p><strong>Artificial intelligence (AI)</strong> is software that does tasks that normally need human thinking, such as recognizing speech, spotting faces in photos, or recommending a song, by finding patterns in data.</p>
+        <h3>Rules versus learning</h3>
+        <p>A calculator follows fixed rules written by a programmer: 2 + 2 is always 4. A spam filter is different. Nobody wrote a rule for every spam email. Instead, it studied thousands of examples and learned what spam tends to look like.</p>
+        <div class="keypoint">Traditional software follows rules people wrote. Modern AI learns patterns from examples.</div>
+        <h3>Narrow AI and general AI</h3>
+        <p>Every AI you can use today is <strong>narrow AI</strong>: excellent at one kind of job (translating, recommending, drafting text) and clueless outside it. <strong>General AI</strong>, a system that can learn to do anything a person can, is still a research goal, not a product.</p>`
+    },
+    { id: '1-2', title: 'How machines learn', mins: 8, act: 'spam',
+      tip: `<b>Tully says:</b> Machines learn the way you learn to spot a good wave: lots of examples, lots of practice.`,
+      body: `
+        <h3>The learning loop</h3>
+        <p>Machine learning (ML) has three parts. First comes <strong>data</strong>, a pile of examples. Next is <strong>training</strong>, where a program hunts for patterns that connect the examples to the right answers. The result is a <strong>model</strong>, which can make predictions about new things it has never seen.</p>
+        <h3>Three ways to learn</h3>
+        <ul class="plain">
+          <li><strong>Supervised learning:</strong> examples come with labels, like photos tagged "cat" or "dog."</li>
+          <li><strong>Unsupervised learning:</strong> no labels. The model groups similar things on its own, like sorting songs into moods.</li>
+          <li><strong>Reinforcement learning:</strong> trial and error with rewards, like a game-playing AI that tries moves and keeps the ones that win.</li>
+        </ul>
+        <div class="keypoint">A model is only as good as its training data. Bad or biased examples in means bad or biased answers out.</div>
+        <p style="margin-top:14px">In the activity below you will play the teacher and label the examples yourself.</p>`
+    },
+    { id: '1-3', title: 'Neural networks and chatbots', mins: 8, act: 'nextWord',
+      tip: `<b>Tully says:</b> A chatbot isn't looking things up. It's guessing the next word, super fast, over and over.`,
+      body: `
+        <h3>Neural networks</h3>
+        <p>A <strong>neural network</strong> is a web of tiny math units arranged in layers. During training, the connections between units get adjusted again and again until the network's outputs improve. <strong>Deep learning</strong> just means a network with many layers.</p>
+        <h3>Generative AI and language models</h3>
+        <p><strong>Generative AI</strong> creates new content: text, images, music, code. Chatbots run on <strong>large language models (LLMs)</strong>. An LLM is trained on huge amounts of text to predict which word (or word piece) is most likely to come next. It then repeats that step to build whole sentences.</p>
+        <h3>Why that matters for you</h3>
+        <p>Because an LLM writes the most <em>likely</em> text, not the most <em>true</em> text, it can sound confident and still be wrong. People call this a <strong>hallucination</strong>.</p>
+        <div class="keypoint">Likely is not the same as true. Always check important facts.</div>`
+    }
+  ],
+  quiz: [
+    { q: 'What best explains the difference between a calculator and a spam filter?',
+      opts: ['A calculator follows fixed rules, while a spam filter learned patterns from examples.', 'A calculator is a computer and a spam filter is not.', 'A spam filter follows the exact same rules as a calculator.', 'Both of them learn from data in the same way.'], a: 0,
+      why: 'Rules written by people are traditional software. Patterns learned from examples are machine learning.' },
+    { q: 'In machine learning, what is training data?',
+      opts: ['Examples the model studies to find patterns.', 'A list of rules a programmer types in by hand.', 'The final answers the model shows to users.', 'A backup copy of the app.'], a: 0,
+      why: 'Training data is the set of examples a model learns from. Its quality shapes everything the model does later.' },
+    { q: 'Why can a chatbot say something false in a very confident tone?',
+      opts: ['It writes likely-sounding text and does not check facts as it goes.', 'It is trying to trick people.', 'It always checks an encyclopedia before answering.', 'A human types the answers behind the scenes.'], a: 0,
+      why: 'Language models predict probable words. Sounding right and being right are two different things.' },
+    { q: 'Today\'s chatbots and image generators are examples of what?',
+      opts: ['Narrow AI that is strong at specific tasks.', 'General AI that can do anything a person can.', 'Conscious AI that has feelings.', 'Rule-only software that cannot learn.'], a: 0,
+      why: 'All current AI is narrow. It can be impressive at a task and still fail badly outside it.' }
+  ]
+},
+{
+  id: 2, name: 'Twilight Zone', depth: '200 to 1,000 m', tag: 'AI tools and techniques',
+  blurb: 'The light is fading, so it is time to get practical. Meet the AI toolbox, write prompts that work, and learn to check every answer.',
+  lessons: [
+    { id: '2-1', title: 'Your AI toolbox', mins: 7, act: 'toolMatch',
+      tip: `<b>Tully says:</b> A good diver picks the right gear for the depth. Same goes for AI tools.`,
+      body: `
+        <h3>Types of AI tools</h3>
+        <ul class="plain">
+          <li><strong>Chat assistants</strong> brainstorm, explain ideas, and draft text.</li>
+          <li><strong>Research and summary tools</strong> work from documents you give them and pull out the main points.</li>
+          <li><strong>Writing helpers</strong> check grammar, tone, and clarity, or translate.</li>
+          <li><strong>Study tools</strong> turn notes into flashcards and practice questions.</li>
+          <li><strong>Coding helpers</strong> explain errors and suggest fixes.</li>
+        </ul>
+        <p style="margin-top:12px">Specific apps change fast, so learn to judge any tool using four questions.</p>
+        <h3>The four-question check</h3>
+        <ul class="plain">
+          <li><strong>What does it do well?</strong> Match the tool to the job.</li>
+          <li><strong>What happens to my data?</strong> Read what it stores and shares.</li>
+          <li><strong>Is it allowed in my class?</strong> Your teacher and school decide this.</li>
+          <li><strong>Can I check its answers?</strong> If you can't verify it, be careful.</li>
+        </ul>
+        <div class="keypoint">The best tool is the one that fits the job, follows your school's rules, and lets you check the result.</div>`
+    },
+    { id: '2-2', title: 'Prompt like a pro', mins: 8, act: 'prompt',
+      tip: `<b>Tully says:</b> A prompt is a message in a bottle. The clearer the note, the better the reply.`,
+      body: `
+        <h3>What is a prompt?</h3>
+        <p>A <strong>prompt</strong> is the instruction you give an AI tool. Vague prompts get vague answers, so use the TIDE method.</p>
+        <ul class="tide">
+          <li><b>T</b><div><strong>Task.</strong> Say exactly what you want done.</div></li>
+          <li><b>I</b><div><strong>Info.</strong> Give context: your grade, the topic, what you already know.</div></li>
+          <li><b>D</b><div><strong>Details.</strong> Set the format, length, tone, and limits.</div></li>
+          <li><b>E</b><div><strong>Evaluate.</strong> Check the answer, then ask follow-ups to improve it.</div></li>
+        </ul>
+        <h3>Before and after</h3>
+        <div class="compare">
+          <div class="weak"><p class="cmp-label">Weak prompt</p><p>"Help me with photosynthesis."</p></div>
+          <div class="strong"><p class="cmp-label">Strong prompt</p><p>"I'm a 10th grader studying for a biology quiz. Explain photosynthesis in 5 short bullet points, then quiz me with 3 questions."</p></div>
+        </div>
+        <div class="keypoint">Great prompts are specific. You are still the one in charge of checking the answer.</div>`
+    },
+    { id: '2-3', title: 'Study smarter and verify everything', mins: 8, act: 'halluc',
+      tip: `<b>Tully says:</b> Trust, but verify. Even a wise old turtle double-checks the map.`,
+      body: `
+        <h3>Use AI to learn, not to skip learning</h3>
+        <ul class="plain">
+          <li><strong>Explain it back.</strong> Tell the AI your understanding and ask what you missed.</li>
+          <li><strong>Quiz me.</strong> Ask for practice questions, answer them first, then ask for feedback.</li>
+          <li><strong>Hints, not answers.</strong> Ask for the next step instead of the whole solution.</li>
+          <li><strong>Feedback on your draft.</strong> Ask what is unclear, then do the rewriting yourself.</li>
+        </ul>
+        <h3>Catching hallucinations</h3>
+        <p>AI tools sometimes invent facts, quotes, and even sources that look real. To protect yourself:</p>
+        <ul class="plain">
+          <li>Check key facts in your textbook, class notes, or a trusted site.</li>
+          <li>If it gives a source, make sure the source actually exists and says that.</li>
+          <li>Run any code it gives you and test it.</li>
+          <li>Be extra careful with numbers, dates, names, and quotes.</li>
+        </ul>
+        <div class="keypoint">If it matters for a grade, a decision, or a fact you will repeat, verify it somewhere else.</div>`
+    }
+  ],
+  quiz: [
+    { q: 'Which prompt will most likely get a useful answer?',
+      opts: ['Help with my essay.', 'Write about plants.', 'I\'m a 10th grader studying for a biology quiz. Explain photosynthesis in 5 bullet points, then ask me 3 practice questions.', 'Photosynthesis.'], a: 2,
+      why: 'It includes a clear task, context about you, and details about format. That is the TIDE method at work.' },
+    { q: 'In the TIDE method, what does the E remind you to do?',
+      opts: ['Evaluate the answer and ask follow-ups.', 'Exaggerate your request.', 'End the chat quickly.', 'Edit the AI\'s settings.'], a: 0,
+      why: 'The first answer is a draft. Check it, then ask follow-up questions to improve it.' },
+    { q: 'An AI cites a study you cannot find anywhere. What should you do?',
+      opts: ['Treat it as possibly made up and check a trusted source before using it.', 'Use it, since AI would not invent a source.', 'Add it to your bibliography anyway.', 'Ask the AI if it is sure and trust whatever it says.'], a: 0,
+      why: 'AI can invent realistic-looking sources. If you cannot verify it, do not use it.' },
+    { q: 'What is the best way to use AI when studying for a test?',
+      opts: ['Ask it to quiz you, then explain what you missed and compare with your class notes.', 'Ask it to take the test for you.', 'Copy its summary and never read your notes.', 'Avoid checking anything it says.'], a: 0,
+      why: 'Active practice builds memory. AI works best as a coach, and your notes keep it honest.' }
+  ]
+},
+{
+  id: 3, name: 'Midnight Zone', depth: '1,000 to 4,000 m', tag: 'Ethical AI',
+  blurb: 'Dark water, big responsibilities. Explore bias, honest schoolwork, privacy, and how to spot fakes.',
+  lessons: [
+    { id: '3-1', title: 'Bias: when AI is not fair', mins: 7, act: 'bias',
+      tip: `<b>Tully says:</b> AI learns from us. If our examples are lopsided, its choices will be too.`,
+      body: `
+        <h3>Where bias comes from</h3>
+        <p>AI learns from data created by people. If the data leaves out some groups, or reflects unfair choices from the past, the model can repeat and even amplify that unfairness. This is called <strong>algorithmic bias</strong>.</p>
+        <h3>Real-world examples</h3>
+        <ul class="plain">
+          <li>Studies have found some face-recognition systems make more mistakes on certain skin tones and genders.</li>
+          <li>Hiring tools trained on past hiring decisions can copy the preferences of the past.</li>
+          <li>Voice assistants can struggle with accents that were rare in their training recordings.</li>
+        </ul>
+        <h3>What helps</h3>
+        <p>Builders can collect more representative data, test results separately for each group, explain how decisions are made, and keep people in the loop for important choices. Users can notice patterns and speak up.</p>
+        <div class="keypoint">An AI is not automatically neutral. Ask: whose data trained this, and who might it work worse for?</div>`
+    },
+    { id: '3-2', title: 'Honest work and academic integrity', mins: 7, act: 'light',
+      tip: `<b>Tully says:</b> Clear water, clear conscience. Use AI to learn, and be honest about how you used it.`,
+      body: `
+        <h3>Start with the rules</h3>
+        <p>Your teacher and school decide when AI is allowed. If the rules are unclear, <strong>ask first</strong>. A quick question is better than a serious integrity problem.</p>
+        <h3>The traffic-light test</h3>
+        <div class="zones3">
+          <div><h4 class="g">Green: learning help</h4><ul><li>Explaining a concept</li><li>Practice questions</li><li>Study plans</li></ul></div>
+          <div><h4 class="y">Yellow: ask first</h4><ul><li>Outlines and brainstorms</li><li>Rewriting your own text</li><li>Code help on graded work</li></ul></div>
+          <div><h4 class="r">Red: not okay</h4><ul><li>Turning in AI work as yours</li><li>Fake sources</li><li>AI during a test</li></ul></div>
+        </div>
+        <h3>Two more habits</h3>
+        <ul class="plain">
+          <li><strong>Disclose and cite.</strong> If AI helped, say how, in the way your teacher asks.</li>
+          <li><strong>Keep your process.</strong> Notes and drafts show your thinking. AI-detection tools are unreliable and can flag honest work, so your process is your best proof.</li>
+        </ul>
+        <div class="keypoint">Ask yourself: would I be comfortable if my teacher watched me do this?</div>`
+    },
+    { id: '3-3', title: 'Privacy, fakes, and the planet', mins: 8, act: 'privacy',
+      tip: `<b>Tully says:</b> Some things stay in your shell. Think before you paste.`,
+      body: `
+        <h3>Protect your privacy</h3>
+        <p>What you type into an AI tool may be stored, reviewed, or used to improve the tool. Never share passwords, your home address, ID numbers, private messages, or other people's personal details. Use tools your school approves, and check each tool's age rules.</p>
+        <h3>Deepfakes and misinformation</h3>
+        <p>AI can create realistic fake images, voices, and videos. Before you believe or share something shocking: pause, check who posted it, look for odd details (hands, text, lighting, lip sync), and search for the story on trusted news sources. Never make fake media of real people without their permission. It can hurt them and may break the law.</p>
+        <h3>The cost to the planet</h3>
+        <p>Training and running large AI models uses a lot of electricity, and data centers also use water for cooling. You don't have to avoid AI, but you can skip it for tasks a quick search or your own brain handles just fine.</p>
+        <div class="keypoint">Think before you paste, verify before you share, and use AI when it is worth it.</div>`
+    }
+  ],
+  quiz: [
+    { q: 'Why can an AI system be biased?',
+      opts: ['It learns from data made by people that may be unbalanced or reflect past unfairness.', 'Computers have opinions of their own.', 'It always copies the last user it talked to.', 'Bias only happens when the code has typos.'], a: 0,
+      why: 'Bias usually comes from the training data and the design choices behind a system, not from the AI "having opinions."' },
+    { q: 'You are not sure whether your teacher allows AI for a homework outline. What is the best move?',
+      opts: ['Ask your teacher before using it.', 'Use it and hope no one notices.', 'Use it and delete the chat history.', 'Assume it is fine if other students do it.'], a: 0,
+      why: 'Asking first is the honest move, and it protects you.' },
+    { q: 'Which of these is the safest to paste into a public chatbot?',
+      opts: ['A general question about how ocean tides work.', 'Your full name and student ID.', 'Your account password.', 'A private message from a classmate.'], a: 0,
+      why: 'A general science question has no personal details. The others expose private information.' },
+    { q: 'You see a shocking video of a public figure saying something outrageous. What do you do first?',
+      opts: ['Pause and check trusted sources before sharing.', 'Share it right away so others can see.', 'Assume it is real because it looks real.', 'Assume all videos are fake.'], a: 0,
+      why: 'Deepfakes look convincing. A quick check with reliable sources stops misinformation from spreading.' }
+  ]
+}
+];
+
+const TRENCH = {
+  name: 'The Trench', depth: '4,000 m and below', tag: 'Capstone',
+  blurb: 'The deepest point. Sign your personal AI pledge and surface as a Sea Sage.'
+};
+
+const PLEDGES = [
+  'I will check important AI answers against a trusted source.',
+  'I will follow my school\'s AI rules and ask when I am unsure.',
+  'I will use AI to learn, not to skip the learning.',
+  'I will never share private information with AI tools.',
+  'I will say when AI helped with my work.',
+  'I will question AI results for bias and unfairness.'
+];
+
+const XPV = { lesson: 50, quizQ: 25, clear: 100, capstone: 200 };
+const LEVELS = [
+  { n: 1, name: 'Hatchling', xp: 0 }, { n: 2, name: 'Snorkeler', xp: 150 },
+  { n: 3, name: 'Diver', xp: 400 }, { n: 4, name: 'Navigator', xp: 700 }, { n: 5, name: 'Sea Sage', xp: 1000 }
+];
+
+/* ============================================================
+   State
+============================================================ */
+const STORE_KEY = 'deepdive-ai-portal-v1';
+const defaults = () => ({ name: '', lessons: {}, quiz: {}, capstone: null, badges: [] });
+let state = defaults();
+try { const raw = localStorage.getItem(STORE_KEY); if (raw) state = Object.assign(defaults(), JSON.parse(raw)); } catch (e) {}
+const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} };
+
+const lessonDone = id => !!state.lessons[id];
+const lessonCount = L => L.lessons.filter(l => lessonDone(l.id)).length;
+const quizBest = L => (state.quiz[L.id] && state.quiz[L.id].best) || 0;
+const quizTried = L => !!state.quiz[L.id];
+const quizPassed = L => quizBest(L) >= PASS;
+const cleared = L => lessonCount(L) === L.lessons.length && quizPassed(L);
+const unlocked = L => L.id === 1 || cleared(LAYERS[L.id - 2]);
+const quizOpen = L => lessonCount(L) === L.lessons.length;
+const trenchOpen = () => LAYERS.every(cleared);
+const capDone = () => !!(state.capstone && state.capstone.done);
+
+function totalXP() {
+  let xp = 0;
+  LAYERS.forEach(L => { xp += lessonCount(L) * XPV.lesson + quizBest(L) * XPV.quizQ + (cleared(L) ? XPV.clear : 0); });
+  if (capDone()) xp += XPV.capstone;
+  return xp;
+}
+function levelInfo(xp) {
+  let i = 0; LEVELS.forEach((l, k) => { if (xp >= l.xp) i = k; });
+  const cur = LEVELS[i], next = LEVELS[i + 1];
+  return { cur, next, pct: next ? (xp - cur.xp) / (next.xp - cur.xp) : 1 };
+}
+
+const BADGES = [
+  { id: 'splash', icon: '💧', name: 'First splash', hint: 'Finish any lesson', test: () => Object.keys(state.lessons).length >= 1 },
+  { id: 'sun', icon: '☀️', name: 'Sunlight scholar', hint: 'Clear the Sunlight Zone', test: () => cleared(LAYERS[0]) },
+  { id: 'twi', icon: '🐙', name: 'Twilight tinkerer', hint: 'Clear the Twilight Zone', test: () => cleared(LAYERS[1]) },
+  { id: 'mid', icon: '🛡️', name: 'Midnight guardian', hint: 'Clear the Midnight Zone', test: () => cleared(LAYERS[2]) },
+  { id: 'prompt', icon: '✍️', name: 'Prompt pro', hint: 'Finish "Prompt like a pro"', test: () => lessonDone('2-2') },
+  { id: 'fact', icon: '🔍', name: 'Fact checker', hint: 'Finish "Study smarter and verify everything"', test: () => lessonDone('2-3') },
+  { id: 'bias', icon: '⚖️', name: 'Bias buster', hint: 'Finish "Bias: when AI is not fair"', test: () => lessonDone('3-1') },
+  { id: 'sharp', icon: '🐚', name: 'Sharp shell', hint: 'Score 4 out of 4 on any layer quiz', test: () => LAYERS.some(L => quizBest(L) === L.quiz.length) },
+  { id: 'abyss', icon: '🔱', name: 'Abyss explorer', hint: 'Sign the pledge in the Trench', test: () => capDone() }
+];
+
+/* ============================================================
+   UI helpers: toast, modal, burst, bubbles
+============================================================ */
+function toast(msg, kind = 'info') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + kind; t.textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 3000);
+}
+function burst(host) {
+  if (reduceMotion()) return;
+  const cols = ['#ffd166', '#5cf2e0', '#ffffff', '#ff9bb0', '#8ef0ff'];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('i'); p.className = 'pop';
+    const a = Math.random() * Math.PI * 2, d = 90 + Math.random() * 140;
+    p.style.setProperty('--dx', Math.cos(a) * d + 'px'); p.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    p.style.background = cols[i % cols.length]; host.appendChild(p);
+    setTimeout(() => p.remove(), 1000);
+  }
+}
+function showModal({ title, text, actions }) {
+  const m = $('#modal');
+  m.innerHTML = `<div class="modal-card">${TURTLE('t')}<h2 id="modal-title">${title}</h2><p>${text}</p><div class="btn-row">${actions.map((a, i) => `<button class="btn ${a.primary ? 'primary' : 'ghost'}" data-i="${i}">${a.label}</button>`).join('')}</div></div>`;
+  $$('button', m).forEach(b => b.onclick = () => { const a = actions[+b.dataset.i]; m.close ? m.close() : m.removeAttribute('open'); if (a.go) location.hash = a.go; if (a.fn) a.fn(); });
+  if (m.showModal) { if (!m.open) m.showModal(); } else m.setAttribute('open', '');
+  burst($('.modal-card', m));
+  const f = $('button', m); if (f) f.focus();
+}
+function addBubbles(host, n = 12) {
+  if (!host) return;
+  for (let i = 0; i < n; i++) {
+    const b = document.createElement('i'); b.className = 'bub';
+    const s = 6 + Math.random() * 18;
+    b.style.cssText = `left:${Math.random() * 100}%;--s:${s}px;--d:${9 + Math.random() * 14}s;--t:${-Math.random() * 18}s;--x:${(Math.random() - .5) * 80}px`;
+    host.appendChild(b);
+  }
+}
+
+/* ============================================================
+   Commit changes (XP, badges, HUD)
+============================================================ */
+function checkBadges() {
+  const fresh = [];
+  BADGES.forEach(b => { if (!state.badges.includes(b.id) && b.test()) { state.badges.push(b.id); fresh.push(b); } });
+  return fresh;
+}
+function commit(fn) {
+  const xp0 = totalXP(), lv0 = levelInfo(xp0).cur.n, was = LAYERS.map(cleared);
+  fn();
+  const xp1 = totalXP();
+  const fresh = checkBadges();
+  save();
+  if (xp1 > xp0) toast(`+${xp1 - xp0} XP`, 'xp');
+  const lv1 = levelInfo(xp1).cur;
+  if (lv1.n > lv0) setTimeout(() => toast(`Level up! You are now a ${lv1.name}`, 'badge'), 700);
+  fresh.forEach((b, i) => setTimeout(() => toast(`Badge earned: ${b.name}`, 'badge'), 1300 + i * 900));
+  renderHUD();
+  return { newlyCleared: LAYERS.find((L, i) => !was[i] && cleared(L)) };
+}
+function renderHUD() {
+  const xp = totalXP(), li = levelInfo(xp), pct = Math.round(li.pct * 100);
+  $('#hud').innerHTML = `<span class="hud-name"><b>${li.cur.name}</b></span><span class="hud-bar" role="img" aria-label="${pct} percent of the way to the next level"><i style="width:${pct}%"></i></span><span class="hud-xp">${xp} XP</span>`;
+}
+function nextStep() {
+  const started = Object.keys(state.lessons).length > 0 || Object.keys(state.quiz).length > 0;
+  for (const L of LAYERS) {
+    if (!unlocked(L)) break;
+    for (let i = 0; i < L.lessons.length; i++) {
+      if (!lessonDone(L.lessons[i].id)) return { href: `#/layer/${L.id}/lesson/${i + 1}`, label: started ? 'Continue your dive' : 'Start your dive' };
+    }
+    if (!quizPassed(L)) return { href: `#/layer/${L.id}/quiz`, label: 'Continue your dive' };
+  }
+  if (!capDone()) return { href: '#/abyss', label: 'Enter the Trench' };
+  return { href: '#/log', label: 'See your dive log' };
+}
+function showClearModal(L) {
+  const next = LAYERS[L.id];
+  showModal({
+    title: `${L.name} cleared!`,
+    text: next ? `The pressure door to the ${next.name} just opened, and you earned +${XPV.clear} XP for clearing the layer.` : `You cleared every layer. One more stop remains: the Trench.`,
+    actions: [
+      { label: next ? `Descend to the ${next.name}` : 'Enter the Trench', primary: true, go: next ? `#/layer/${next.id}` : '#/abyss' },
+      { label: 'Stay here' }
+    ]
+  });
+}
+
+/* ============================================================
+   Activities
+============================================================ */
+function sorter(el, cfg, ctx) {
+  let idx = 0, score = 0;
+  el.innerHTML = `<h3 class="act-title">${cfg.title}</h3><p class="act-help">${cfg.help}</p><div class="stage"></div>`;
+  const stage = $('.stage', el);
+  const show = () => {
+    if (idx >= cfg.items.length) {
+      stage.innerHTML = `<div class="flash result"><p class="flash-q">${score} of ${cfg.items.length} ${cfg.unit}</p><p>${cfg.after}</p><div class="btn-row" style="margin-top:14px"><button class="btn ghost" data-act="again">Play again</button></div></div>`;
+      $('[data-act=again]', stage).onclick = () => { idx = 0; score = 0; show(); };
+      ctx.done(); return;
+    }
+    const it = cfg.items[idx];
+    stage.innerHTML = `<div class="flash"><p class="flash-count">Card ${idx + 1} of ${cfg.items.length}</p><p class="flash-q">${it.t}</p><div class="choices" role="group" aria-label="Your answer">${cfg.choices.map(c => `<button class="btn choice ${c.cls || ''}" data-v="${c.v}">${c.label}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`;
+    $$('.choice', stage).forEach(b => b.onclick = () => {
+      const ok = b.dataset.v === it.a; if (ok) score++;
+      $$('.choice', stage).forEach(x => { x.disabled = true; if (x.dataset.v === it.a) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
+      const fb = $('.fb', stage);
+      fb.innerHTML = `<p class="${ok ? 'good' : 'miss'}"><strong>${ok ? 'Nice catch.' : 'Not quite.'}</strong> ${it.why}</p><button class="btn primary" data-act="next">${idx + 1 < cfg.items.length ? 'Next card' : 'See results'}</button>`;
+      const nb = $('[data-act=next]', fb); nb.onclick = () => { idx++; show(); }; nb.focus();
+    });
+  };
+  show();
+}
+
+const ACT = {
+  sortAI(el, ctx) {
+    sorter(el, {
+      title: 'AI or not AI?', help: 'Decide whether each item uses AI. You get an explanation either way.',
+      unit: 'correct', after: 'The key question: did it learn patterns from data, or does it only follow fixed steps?',
+      choices: [{ v: 'ai', label: 'AI' }, { v: 'not', label: 'Not AI' }],
+      items: [
+        { t: 'A calculator app', a: 'not', why: 'It follows fixed math rules. It never learns anything.' },
+        { t: 'Your email\'s spam filter', a: 'ai', why: 'It learned from huge numbers of emails what spam usually looks like.' },
+        { t: 'A light switch on a timer', a: 'not', why: 'It follows a schedule someone set. No learning involved.' },
+        { t: 'A maps app rerouting you around traffic', a: 'ai', why: 'It predicts travel times from large amounts of live and past data.' },
+        { t: 'A voice assistant understanding "set a timer"', a: 'ai', why: 'Speech recognition is learned from many recordings of people talking.' },
+        { t: 'A game shopkeeper who repeats the same three lines', a: 'not', why: 'Scripted characters say what a programmer wrote. They do not learn.' }
+      ]
+    }, ctx);
+  },
+
+  spam(el, ctx) {
+    const msgs = [
+      'WIN a FREE prize! Claim your reward now',
+      'Lunch at noon? I saved you a seat',
+      'Urgent: your account is locked. Click here to claim your free gift',
+      'Can you send me the notes from chemistry class?',
+      'Limited offer!! Free gift cards, click now',
+      'Reminder: robotics meeting moved to room 204'
+    ];
+    const tests = ['Claim your free reward today', 'Are the chemistry notes in room 204?'];
+    const STOP = new Set('the and you your are for with from have this that was can not now here but all our out has had too its let'.split(' '));
+    const words = t => Array.from(new Set(t.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !STOP.has(w))));
+    const labels = new Array(msgs.length).fill(null);
+    el.innerHTML = `<h3 class="act-title">Train a spam filter</h3><p class="act-help">You are the teacher. Label all six messages, then train the filter and see what it learned.</p>
+      <div class="msg-row">${msgs.map((m, i) => `<div class="msg"><p>${esc(m)}</p><div class="seg" role="group" aria-label="Label message ${i + 1}"><button class="sp" aria-pressed="false" data-i="${i}" data-v="spam">Spam</button><button class="hm" aria-pressed="false" data-i="${i}" data-v="ham">Not spam</button></div></div>`).join('')}</div>
+      <div class="btn-row" style="margin-top:16px"><button class="btn primary" id="train" disabled>Train the filter</button></div>
+      <div id="spam-out" aria-live="polite"></div>`;
+    const train = $('#train', el);
+    $$('.seg button', el).forEach(b => b.onclick = () => {
+      const i = +b.dataset.i; labels[i] = b.dataset.v;
+      $$(`.seg button[data-i="${i}"]`, el).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      train.disabled = labels.some(l => !l);
+    });
+    train.onclick = () => {
+      const w = {};
+      msgs.forEach((m, i) => words(m).forEach(k => { w[k] = (w[k] || 0) + (labels[i] === 'spam' ? 1 : -1); }));
+      const top = (sign) => Object.entries(w).filter(([, v]) => v * sign > 0).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]) || a[0].localeCompare(b[0])).slice(0, 7).map(([k]) => k);
+      const spamW = top(1), hamW = top(-1);
+      const verdicts = tests.map(t => {
+        const ws = words(t), sc = ws.reduce((s, k) => s + (w[k] || 0), 0);
+        const hits = ws.filter(k => w[k]);
+        return `<div class="verdict"><strong>"${esc(t)}"</strong><br>Verdict: <strong>${sc > 0 ? 'Spam' : sc < 0 ? 'Not spam' : 'Not sure'}</strong> (score ${sc > 0 ? '+' : ''}${sc}).${hits.length ? ' Words it recognized: ' + hits.map(esc).join(', ') + '.' : ' It did not recognize any of these words.'}</div>`;
+      }).join('');
+      $('#spam-out', el).innerHTML = `<div class="flash"><p class="flash-q">What your filter learned</p>
+        <p><strong>Spam clues</strong></p><div class="chips spam">${spamW.length ? spamW.map(k => `<span>${esc(k)}</span>`).join('') : '<span>none yet</span>'}</div>
+        <p style="margin-top:12px"><strong>Not-spam clues</strong></p><div class="chips ham">${hamW.length ? hamW.map(k => `<span>${esc(k)}</span>`).join('') : '<span>none yet</span>'}</div>
+        <p style="margin-top:16px"><strong>Now it tries two new messages it has never seen:</strong></p>${verdicts}
+        <p class="fine">Try changing a few labels and train again. If you mislabel the examples, the filter learns the wrong lesson. That is "garbage in, garbage out."</p></div>`;
+      train.textContent = 'Train again'; ctx.done();
+    };
+  },
+
+  nextWord(el, ctx) {
+    const prompts = [
+      { s: 'The sea turtle slowly swam across the', o: [['ocean', 41], ['bay', 18], ['reef', 14], ['lagoon', 9], ['pool', 6], ['kitchen', 0.1]], n: 'The model gives most weight to words that often follow this phrase in its training text. Unusual words get tiny probabilities, but never exactly zero.' },
+      { s: 'To make a grilled cheese sandwich, first butter the', o: [['bread', 72], ['pan', 14], ['cheese', 8], ['griddle', 4], ['skillet', 2]], n: 'When a pattern is extremely common, the model becomes very sure. Confidence comes from patterns, not understanding.' },
+      { s: 'The capital city of Australia is', o: [['Canberra', 62], ['Sydney', 31], ['Melbourne', 6], ['Perth', 1]], n: 'Here the likeliest word is also correct. But notice how much weight goes to Sydney, because it shows up so often in text. A wrong answer can be very probable. Likely is not the same as true. (Numbers here are simplified for learning.)' }
+    ];
+    let i = 0;
+    el.innerHTML = `<h3 class="act-title">Be the language model</h3><p class="act-help">Guess which word the model thinks is most likely to come next, then see its (simplified) probabilities.</p><div class="stage"></div>`;
+    const stage = $('.stage', el);
+    const show = () => {
+      const p = prompts[i], opts = shuffle(p.o.slice(0, 4).map(x => x[0]));
+      // always include the true top word among options
+      if (!opts.includes(p.o[0][0])) opts[0] = p.o[0][0];
+      stage.innerHTML = `<div class="flash"><p class="flash-count">Prompt ${i + 1} of ${prompts.length}</p><p class="sentence">${p.s} <u>&nbsp;&nbsp;&nbsp;</u></p><div class="choices" role="group" aria-label="Your guess">${shuffle(opts).map(o => `<button class="btn choice" data-w="${o}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`;
+      $$('.choice', stage).forEach(b => b.onclick = () => {
+        $$('.choice', stage).forEach(x => x.disabled = true);
+        const max = Math.max(...p.o.map(x => x[1]));
+        const good = b.dataset.w === p.o[0][0];
+        $('.fb', stage).innerHTML = `<div class="bars" style="width:100%">${p.o.map(([w, v]) => `<div class="bar-row"><span>${w}</span><div class="bar"><i class="${w === b.dataset.w ? 'pick' : v === max ? 'hot' : ''}" style="width:${Math.max(v / max * 100, 1.5)}%"></i></div><b>${v}%</b></div>`).join('')}</div>
+          <p><strong>${good ? 'You matched the model.' : 'The model preferred "' + p.o[0][0] + '".'}</strong> ${p.n}</p>
+          <button class="btn primary" id="nw">${i + 1 < prompts.length ? 'Next prompt' : 'Finish activity'}</button>`;
+        const nb = $('#nw', stage);
+        nb.onclick = () => { if (i + 1 < prompts.length) { i++; show(); } else { stage.innerHTML = `<div class="flash result"><p class="flash-q">Activity complete</p><p>You just did what a language model does billions of times a day: picked a likely next word. It never checked a fact.</p><div class="btn-row" style="margin-top:14px"><button class="btn ghost" id="again">Play again</button></div></div>`; $('#again', stage).onclick = () => { i = 0; show(); }; ctx.done(); } };
+        nb.focus();
+      });
+    };
+    show();
+  },
+
+  toolMatch(el, ctx) {
+    sorter(el, {
+      title: 'Pick the right tool', help: 'Match each job to the type of AI tool that fits it best.',
+      unit: 'matched', after: 'Remember the four-question check: fit the job, protect your data, follow class rules, and verify the result.',
+      choices: [{ v: 'chat', label: 'Chat assistant' }, { v: 'research', label: 'Research and summary tool' }, { v: 'writing', label: 'Writing helper' }, { v: 'study', label: 'Study tool' }, { v: 'code', label: 'Coding helper' }],
+      items: [
+        { t: 'You need the main points of a 20-page article before class.', a: 'research', why: 'Summary tools work from the document you give them. You should still skim the article to confirm.' },
+        { t: 'Your essay sounds stiff and you want suggestions on tone.', a: 'writing', why: 'Writing helpers focus on clarity, grammar, and tone. You make the final edits.' },
+        { t: 'You need ten science fair project ideas to choose from.', a: 'chat', why: 'Chat assistants are great for brainstorming. Pick ideas you find interesting and research them.' },
+        { t: 'You want to turn your unit notes into practice questions.', a: 'study', why: 'Study tools build flashcards and quizzes from your own material.' },
+        { t: 'Your Python loop never ends and you cannot find the bug.', a: 'code', why: 'Coding helpers can explain errors. Ask why it is wrong so you learn, then test the fix.' }
+      ]
+    }, ctx);
+  },
+
+  prompt(el, ctx) {
+    el.innerHTML = `<h3 class="act-title">Build a TIDE prompt</h3><p class="act-help">Fill in each part. The meter fills as your prompt gets stronger. Fill all four segments to complete the activity.</p>
+      <div class="field"><label for="p-t"><b>T</b>Task: what should the AI do?</label><textarea id="p-t" rows="2" placeholder="Example: Explain how photosynthesis works so I can study for a quiz."></textarea></div>
+      <div class="field"><label for="p-i"><b>I</b>Info: what context should it know?</label><textarea id="p-i" rows="2" placeholder="Example: I'm a 10th grader and I mix up the light reactions and the Calvin cycle."></textarea></div>
+      <div class="field"><label for="p-d"><b>D</b>Details: format, length, tone, limits</label><textarea id="p-d" rows="2" placeholder="Example: Use 5 short bullet points, then ask me 3 practice questions."></textarea></div>
+      <label class="check"><input type="checkbox" id="p-e"><span><strong>E</strong> Evaluate: I will check the answer and ask a follow-up question.</span></label>
+      <div class="meter" id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <p class="fine" id="mtext" aria-live="polite">Strength: 0 of 4</p>
+      <div class="preview" id="pv" aria-label="Prompt preview">Your finished prompt will appear here.</div>
+      <div class="btn-row" style="margin-top:14px"><button class="btn ghost" id="ex">Load an example</button><button class="btn ghost" id="cp">Copy prompt</button></div>`;
+    const t = $('#p-t', el), i = $('#p-i', el), d = $('#p-d', el), e = $('#p-e', el);
+    const wc = s => s.trim().split(/\s+/).filter(Boolean).length;
+    const upd = () => {
+      const c = [wc(t.value) >= 4, wc(i.value) >= 5, wc(d.value) >= 4, e.checked];
+      const n = c.filter(Boolean).length;
+      $$('#meter i', el).forEach((x, k) => x.classList.toggle('on', k < n));
+      const hints = [];
+      if (!c[0]) hints.push('add a clear task (4+ words)'); if (!c[1]) hints.push('add context (5+ words)'); if (!c[2]) hints.push('add format or limits (4+ words)'); if (!c[3]) hints.push('tick Evaluate');
+      $('#mtext', el).textContent = n === 4 ? 'Strength: 4 of 4. Strong prompt!' : `Strength: ${n} of 4. To improve: ${hints.join(', ')}.`;
+      const parts = [t.value.trim(), i.value.trim() && 'Context: ' + i.value.trim(), d.value.trim() && 'Format and limits: ' + d.value.trim()].filter(Boolean);
+      $('#pv', el).textContent = parts.length ? parts.join('\n\n') : 'Your finished prompt will appear here.';
+      if (n === 4) ctx.done();
+    };
+    [t, i, d].forEach(x => x.addEventListener('input', upd)); e.addEventListener('change', upd);
+    $('#ex', el).onclick = () => { t.value = 'Explain how photosynthesis works so I can study for my biology quiz.'; i.value = 'I\'m a 10th grader. I know plants use sunlight but I mix up the light reactions and the Calvin cycle.'; d.value = 'Use 5 short bullet points in plain language, then ask me 3 practice questions and wait for my answers.'; e.checked = true; upd(); };
+    $('#cp', el).onclick = async () => { try { await navigator.clipboard.writeText($('#pv', el).textContent); toast('Prompt copied'); } catch (err) { toast('Select the text and copy it manually'); } };
+  },
+
+  halluc(el, ctx) {
+    const rounds = [
+      { topic: 'Sea turtles', claims: [
+        { t: 'Sea turtles are reptiles and must come to the surface to breathe air.', bad: false },
+        { t: 'Female sea turtles return to land to lay their eggs, often on beaches near where they hatched.', bad: false },
+        { t: 'Green sea turtles are strictly carnivores that eat only jellyfish.', bad: true, why: 'Adult green sea turtles mostly eat seagrass and algae. Leatherbacks are the jellyfish specialists. This is a mix-up that sounds believable.' },
+        { t: 'The leatherback is the largest living sea turtle.', bad: false } ] },
+      { topic: 'The Pacific Ocean', claims: [
+        { t: 'The Pacific is the largest and deepest of Earth\'s oceans.', bad: false },
+        { t: 'The deepest known point, Challenger Deep in the Mariana Trench, is nearly 11,000 meters down.', bad: false },
+        { t: 'The Pacific is the smallest of Earth\'s five oceans.', bad: true, why: 'It is the largest. The Arctic is the smallest. A single flipped fact can hide inside an otherwise correct answer.' },
+        { t: 'The Pacific covers more area than all of Earth\'s land combined.', bad: false } ] }
+    ];
+    let i = 0;
+    el.innerHTML = `<h3 class="act-title">Spot the hallucination</h3><p class="act-help">Each AI answer below hides exactly one false claim. Click the one you think is made up.</p><div class="stage"></div>`;
+    const stage = $('.stage', el);
+    const show = () => {
+      const r = rounds[i];
+      stage.innerHTML = `<div class="flash"><p class="flash-count">Round ${i + 1} of ${rounds.length}</p><p class="flash-q">AI answer: "Tell me about ${r.topic.toLowerCase()}."</p><div class="claims">${r.claims.map((c, k) => `<button class="claim" data-k="${k}">${c.t}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`;
+      $$('.claim', stage).forEach(b => b.onclick = () => {
+        const k = +b.dataset.k, c = r.claims[k], bad = r.claims.find(x => x.bad);
+        $$('.claim', stage).forEach((x, n) => { x.disabled = true; if (r.claims[n].bad) x.classList.add('right'); else x.classList.add('safe'); });
+        $('.fb', stage).innerHTML = `<p class="${c.bad ? 'good' : 'miss'}"><strong>${c.bad ? 'You caught it.' : 'That one is actually true.'}</strong> The false claim is highlighted. ${bad.why}</p><button class="btn primary" id="hn">${i + 1 < rounds.length ? 'Next round' : 'Finish activity'}</button>`;
+        const nb = $('#hn', stage);
+        nb.onclick = () => { if (i + 1 < rounds.length) { i++; show(); } else { stage.innerHTML = `<div class="flash result"><p class="flash-q">Activity complete</p><p>Both answers were mostly right, which is exactly why hallucinations are sneaky. Check the facts that matter before you use them.</p><div class="btn-row" style="margin-top:14px"><button class="btn ghost" id="again">Play again</button></div></div>`; $('#again', stage).onclick = () => { i = 0; show(); }; ctx.done(); } };
+        nb.focus();
+      });
+    };
+    show();
+  },
+
+  bias(el, ctx) {
+    el.innerHTML = `<h3 class="act-title">Balance the training data</h3><p class="act-help">A voice assistant learns from recordings of two accents. Move the slider until both groups get similar accuracy (within 5 points).</p>
+      <label class="slider" for="rng"><span>Training recordings from Accent A: <b id="pa">85%</b>, Accent B: <b id="pb">15%</b></span><input id="rng" type="range" min="10" max="90" value="85"></label>
+      <div class="bars"><div class="bar-row"><span>Accent A</span><div class="bar"><i id="ba"></i></div><b id="va"></b></div><div class="bar-row"><span>Accent B</span><div class="bar"><i id="bb" class="hot"></i></div><b id="vb"></b></div></div>
+      <p class="fb" id="bmsg" aria-live="polite"></p>
+      <p class="fine">A simplified model for learning. Real systems are messier, which is why builders test results for each group separately.</p>`;
+    const rng = $('#rng', el); let won = false;
+    const upd = () => {
+      const p = +rng.value / 100, a = 55 + 40 * Math.sqrt(p), b = 55 + 40 * Math.sqrt(1 - p), gap = Math.abs(a - b);
+      $('#pa', el).textContent = Math.round(p * 100) + '%'; $('#pb', el).textContent = Math.round((1 - p) * 100) + '%';
+      $('#ba', el).style.width = a + '%'; $('#bb', el).style.width = b + '%';
+      $('#va', el).textContent = Math.round(a) + '%'; $('#vb', el).textContent = Math.round(b) + '%';
+      const m = $('#bmsg', el);
+      if (gap <= 5) { m.innerHTML = '<strong>Balanced!</strong> Both groups now get similar accuracy because the model saw enough examples of each. Fair data helps, and so does testing each group.'; if (!won) { won = true; ctx.done(); } }
+      else m.innerHTML = `The accuracy gap is ${Math.round(gap)} points. The group with fewer examples gets worse results. Try moving the slider.`;
+    };
+    rng.addEventListener('input', upd); upd();
+  },
+
+  light(el, ctx) {
+    sorter(el, {
+      title: 'Green, yellow, or red?', help: 'Sort each scenario using the traffic-light test.',
+      unit: 'correct', after: 'When in doubt, ask. And remember: every school and teacher sets their own rules.',
+      choices: [{ v: 'g', label: 'Green light', cls: 'green' }, { v: 'y', label: 'Yellow: ask first', cls: 'yellow' }, { v: 'r', label: 'Red light', cls: 'red' }],
+      items: [
+        { t: 'Asking AI to explain a math idea you missed in class, then solving the problems yourself.', a: 'g', why: 'You are using AI as a tutor, and the thinking is still yours.' },
+        { t: 'Pasting your assignment into AI and turning in what it writes.', a: 'r', why: 'That is presenting AI work as your own. It is not okay.' },
+        { t: 'Having AI generate an outline for your history paper.', a: 'y', why: 'Some teachers allow it and some do not. Ask first and say how you used it.' },
+        { t: 'Asking AI to invent sources for your bibliography.', a: 'r', why: 'AI-made sources are often fake. Fabricating sources is a serious integrity problem.' },
+        { t: 'Using AI to make practice questions for your unit test.', a: 'g', why: 'This is active studying. Check the answers against your notes.' },
+        { t: 'Using AI to fix the code in a graded programming project when your teacher has not said whether that is allowed.', a: 'y', why: 'Unclear rules mean ask first. Some teachers want you to debug it yourself.' }
+      ]
+    }, ctx);
+  },
+
+  privacy(el, ctx) {
+    sorter(el, {
+      title: 'Before you paste', help: 'Could this go into a public AI chatbot, or should it stay private?',
+      unit: 'correct', after: 'Rule of thumb: if you would not post it publicly, do not paste it into a chatbot.',
+      choices: [{ v: 'safe', label: 'Safe to paste' }, { v: 'private', label: 'Keep private' }],
+      items: [
+        { t: 'A question about how volcanoes form.', a: 'safe', why: 'It is a general question with no personal details.' },
+        { t: 'Your home address and phone number.', a: 'private', why: 'Contact details can be stored and misused.' },
+        { t: 'Your account password, so the AI can "help you log in."', a: 'private', why: 'Never share passwords with anyone or anything.' },
+        { t: 'A paragraph from your own essay, with your name and school removed, asking for clarity feedback.', a: 'safe', why: 'With personal details removed, and if your teacher allows it, this is low risk.' },
+        { t: 'A photo of your student ID.', a: 'private', why: 'IDs contain sensitive details that should not be uploaded.' },
+        { t: 'A classmate\'s name along with a rumor about them.', a: 'private', why: 'It exposes another person and could cause real harm.' },
+        { t: 'A public-domain poem you are analyzing for English.', a: 'safe', why: 'Public texts carry no private information.' },
+        { t: 'Your grades and student ID number.', a: 'private', why: 'Academic records are private and identify you.' }
+      ]
+    }, ctx);
+  }
+};
+
+/* ============================================================
+   Views
+============================================================ */
+const main = $('#main');
+let gauge = null, gaugeCleanup = null;
+
+function teardownGauge() {
+  if (gaugeCleanup) gaugeCleanup(); gaugeCleanup = null;
+  if (gauge) gauge.remove(); gauge = null;
+  document.body.classList.remove('has-gauge');
+}
+
+const WAVE = (fill) => `<svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 46 C180 96 340 6 560 44 S980 90 1160 40 S1360 30 1440 50 V90 H0Z" style="fill:${fill}"/></svg>`;
+const WAVE_TOP = `<svg class="wave-top" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 46 C180 96 340 6 560 44 S980 90 1160 40 S1360 30 1440 50 V90 H0Z"/></svg>`;
+const creatureFor = n => n === 1 ? `<svg class="creature fish" viewBox="0 0 80 44" aria-hidden="true"><use href="#fish" width="80" height="44"/></svg><svg class="creature fish two" viewBox="0 0 80 44" aria-hidden="true"><use href="#fish" width="80" height="44"/></svg>`
+  : n === 2 ? `<svg class="creature jelly" viewBox="0 0 60 96" aria-hidden="true"><use href="#jelly" width="60" height="96"/></svg>`
+  : n === 3 ? `<svg class="creature angler" viewBox="0 0 120 90" aria-hidden="true"><use href="#angler" width="120" height="90"/></svg>`
+  : `<div class="creature orb" aria-hidden="true"></div>`;
+
+function stoneHTML(num, title, sub, xp, state_, href) {
+  const icon = state_ === 'done' ? '✓' : state_ === 'lock' ? '🔒' : num;
+  const inner = `<span class="hex ${state_ === 'done' ? 'done' : state_ === 'lock' ? 'lock' : state_ === 'idle' ? 'idle' : ''}" aria-hidden="true">${icon}</span><span class="grow"><strong>${title}</strong><span class="sub">${sub}</span></span><span class="xp">${xp}</span>`;
+  return href ? `<li><a class="stone" href="${href}">${inner}</a></li>` : `<li><div class="stone">${inner}</div></li>`;
+}
+
+function zoneHTML(L) {
+  const st = cleared(L) ? 'cleared' : unlocked(L) ? 'open' : 'locked';
+  const n = L.id;
+  const stones = L.lessons.map((l, i) => stoneHTML(i + 1, esc(l.title), `${l.mins} min lesson`, lessonDone(l.id) ? 'Done' : `+${XPV.lesson} XP`, lessonDone(l.id) ? 'done' : st === 'locked' ? 'lock' : 'open', st === 'locked' ? null : `#/layer/${n}/lesson/${i + 1}`)).join('')
+    + stoneHTML('Q', 'Layer quiz', `Get ${PASS} of ${L.quiz.length} right to clear`, quizPassed(L) ? `${quizBest(L)}/${L.quiz.length}` : `up to +${L.quiz.length * XPV.quizQ} XP`, quizPassed(L) ? 'done' : st === 'locked' || !quizOpen(L) ? 'lock' : 'open', st === 'locked' || !quizOpen(L) ? null : `#/layer/${n}/quiz`);
+  const prev = LAYERS[n - 2];
+  const door = st === 'locked' ? `<div class="door"><div><span class="lockicon" aria-hidden="true">🔒</span><strong>Pressure door sealed</strong>Clear the ${prev.name} to open this layer.</div></div>` : '';
+  const pillTxt = st === 'cleared' ? 'Cleared' : st === 'open' ? 'Open' : 'Locked';
+  const cta = st === 'locked' ? `<button class="btn ghost" disabled>Locked</button>` : `<a class="btn ${st === 'open' ? 'primary' : 'ghost'}" href="#/layer/${n}">${st === 'cleared' ? 'Revisit this layer' : lessonCount(L) ? 'Continue the ' + L.name : 'Enter the ' + L.name}</a>`;
+  return `<section class="zone z${n}" id="zone-${n}" aria-labelledby="zh-${n}">${WAVE_TOP}<div class="bubbles-host"></div>${creatureFor(n)}
+    <div class="wrap"><div class="zone-grid">
+      <div class="zone-head">
+        <span class="state-pill ${st}">${pillTxt}</span> <span class="chip" style="margin-left:6px">${L.depth}</span>
+        <h2 id="zh-${n}" style="margin-top:16px">${L.name}</h2>
+        <p class="tag">${L.tag}</p>
+        <p class="blurb">${L.blurb}</p>
+        <p class="meta">${lessonCount(L)} of ${L.lessons.length} lessons done${quizTried(L) ? `, quiz best ${quizBest(L)}/${L.quiz.length}` : ''}</p>
+        <div class="btn-row">${cta}</div>
+      </div>
+      <div class="locked-list ${st === 'locked' ? 'on' : ''}">${door}<ol class="stones" ${st === 'locked' ? 'aria-hidden="true"' : ''} style="list-style:none">${stones}</ol></div>
+    </div></div></section>`;
+}
+
+function viewHome() {
+  teardownGauge();
+  const ns = nextStep();
+  const trenchSt = capDone() ? 'cleared' : trenchOpen() ? 'open' : 'locked';
+  const door = trenchSt === 'locked' ? `<div class="door"><div><span class="lockicon" aria-hidden="true">🔒</span><strong>Pressure door sealed</strong>Clear all three layers to reach the Trench.</div></div>` : '';
+  main.innerHTML = `
+  <section class="hero z0" id="hero" aria-labelledby="h1">
+    <div class="rays" aria-hidden="true"></div><div class="bubbles-host"></div>
+    <div class="wrap"><div class="hero-grid">
+      <div>
+        <h1 id="h1">Dive into AI, one layer at a time.</h1>
+        <p class="lede">Follow Tully the sea turtle down through three ocean layers. Learn what AI is, how to use it well in school, and how to use it fairly. Each layer unlocks when you finish the one above.</p>
+        <div class="btn-row"><a class="btn primary" href="${ns.href}">${ns.label}</a><a class="btn ghost" href="#/log">Open your dive log</a></div>
+        <ul class="hero-facts"><li>3 layers</li><li>9 hands-on lessons</li><li>Quizzes, XP, and 9 badges</li></ul>
+      </div>
+      <div class="hero-turtle">
+        <p class="say"><b>Hi, I'm Tully!</b> Grab a breath. We're heading down together.</p>
+        ${TURTLE('big')}
+      </div>
+    </div></div>
+    ${WAVE('var(--z1-bg1)')}
+  </section>
+  <section class="how" aria-labelledby="how-h"><div class="wrap">
+    <h2 id="how-h">How the dive works</h2>
+    <ol class="steps">
+      <li><h3>Learn</h3><p>Read a short lesson, then try the hands-on activity to make the idea stick.</p></li>
+      <li><h3>Prove it</h3><p>Finish all three lessons, then pass the layer quiz with ${PASS} of 4 correct.</p></li>
+      <li><h3>Descend</h3><p>The next layer opens. Along the way you earn XP, level up, and collect badges.</p></li>
+    </ol>
+  </div></section>
+  ${LAYERS.map(zoneHTML).join('')}
+  <section class="zone z4" id="zone-4" aria-labelledby="zh-4">${WAVE_TOP}<div class="bubbles-host"></div>${creatureFor(4)}
+    <div class="wrap"><div class="zone-grid">
+      <div class="zone-head">
+        <span class="state-pill ${trenchSt}">${trenchSt === 'cleared' ? 'Cleared' : trenchSt === 'open' ? 'Open' : 'Locked'}</span> <span class="chip" style="margin-left:6px">${TRENCH.depth}</span>
+        <h2 id="zh-4" style="margin-top:16px">${TRENCH.name}</h2>
+        <p class="tag">${TRENCH.tag}</p>
+        <p class="blurb">${TRENCH.blurb}</p>
+        <div class="btn-row">${trenchSt === 'locked' ? '<button class="btn ghost" disabled>Locked</button>' : `<a class="btn ${trenchSt === 'open' ? 'primary' : 'ghost'}" href="#/abyss">${trenchSt === 'cleared' ? 'See your certificate' : 'Enter the Trench'}</a>`}</div>
+      </div>
+      <div class="locked-list ${trenchSt === 'locked' ? 'on' : ''}">${door}<ol class="stones" ${trenchSt === 'locked' ? 'aria-hidden="true"' : ''} style="list-style:none">${stoneHTML('★', 'Sign your AI pledge', 'Pick your promises and earn your certificate', capDone() ? 'Done' : `+${XPV.capstone} XP`, capDone() ? 'done' : trenchSt === 'locked' ? 'lock' : 'open', trenchSt === 'locked' ? null : '#/abyss')}</ol></div>
+    </div></div></section>`;
+  $$('.bubbles-host').forEach(h => addBubbles(h, 9));
+  setupGauge();
+}
+
+function setupGauge() {
+  if (reduceMotion() && false) return;
+  gauge = document.createElement('div'); gauge.className = 'gauge'; gauge.setAttribute('aria-hidden', 'true');
+  gauge.innerHTML = `<div class="g-track"></div><div class="g-ticks"></div><div class="g-turtle" id="gt">${TURTLE()}<span class="g-depth" id="gd">0 m</span></div>`;
+  document.body.appendChild(gauge); document.body.classList.add('has-gauge');
+  const names = [['hero', 'Surface'], ['zone-1', 'Sunlight'], ['zone-2', 'Twilight'], ['zone-3', 'Midnight'], ['zone-4', 'Trench']];
+  const gt = $('#gt', gauge), gd = $('#gd', gauge), ticks = $('.g-ticks', gauge);
+  const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  const layout = () => {
+    ticks.innerHTML = names.map(([id, nm]) => { const e = document.getElementById(id); if (!e) return ''; const p = clamp(e.offsetTop / maxScroll(), 0, 1) * 100; return `<span class="g-tick" style="top:${p}%"></span><span class="g-label" style="top:${p}%">${nm}</span>`; }).join('');
+  };
+  const upd = () => {
+    const p = clamp(window.scrollY / maxScroll(), 0, 1);
+    gt.style.top = (p * 100) + '%';
+    gd.textContent = (Math.round(p * 400) * 10).toLocaleString() + ' m';
+  };
+  layout(); upd();
+  const onResize = () => { layout(); upd(); };
+  window.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', onResize);
+  const t = setTimeout(layout, 600);
+  gaugeCleanup = () => { window.removeEventListener('scroll', upd); window.removeEventListener('resize', onResize); clearTimeout(t); };
+}
+
+function viewLayer(n) {
+  const L = LAYERS[n - 1], next = LAYERS[n];
+  const lessonStones = L.lessons.map((l, i) => {
+    const d = lessonDone(l.id);
+    return `<li><a class="stone" href="#/layer/${n}/lesson/${i + 1}"><span class="hex ${d ? 'done' : ''}" aria-hidden="true">${d ? '✓' : i + 1}</span><span class="grow"><strong>${esc(l.title)}</strong><span class="sub">${l.mins} min with a hands-on activity</span></span><span class="xp">${d ? 'Done' : '+' + XPV.lesson + ' XP'}</span></a></li>`;
+  }).join('');
+  const qo = quizOpen(L);
+  const quizStone = qo
+    ? `<li><a class="stone" href="#/layer/${n}/quiz"><span class="hex ${quizPassed(L) ? 'done' : ''}" aria-hidden="true">${quizPassed(L) ? '✓' : 'Q'}</span><span class="grow"><strong>Layer quiz</strong><span class="sub">${quizTried(L) ? `Best score ${quizBest(L)} of ${L.quiz.length}. ` : ''}Get ${PASS} of ${L.quiz.length} right to clear the layer</span></span><span class="xp">${quizPassed(L) ? 'Passed' : 'Up to +' + L.quiz.length * XPV.quizQ + ' XP'}</span></a></li>`
+    : `<li><div class="stone" style="opacity:.75"><span class="hex lock" aria-hidden="true">🔒</span><span class="grow"><strong>Layer quiz</strong><span class="sub">Finish all ${L.lessons.length} lessons to unlock</span></span></div></li>`;
+  const clearedNow = cleared(L);
+  const nextBox = clearedNow ? `<div class="card next-box"><div><h2>${L.name} cleared</h2><p style="margin-top:6px">${next ? `The ${next.name} is open. Ready to go deeper?` : 'Only the Trench remains.'}</p></div><a class="btn primary" href="${next ? '#/layer/' + next.id : '#/abyss'}">${next ? 'Descend to the ' + next.name : 'Enter the Trench'}</a></div>` : '';
+  main.innerHTML = `<div class="view z${n}"><div class="bubbles-host"></div><div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Dive map</a><span aria-hidden="true">/</span><span>${L.name}</span></nav>
+    <header class="page-head"><span class="chip">${L.depth}</span><h1 id="page-h" tabindex="-1">${L.name}</h1><p class="lede">${L.blurb}</p>
+      <div class="progress-line"><span class="chip">${lessonCount(L)} of ${L.lessons.length} lessons</span><span class="chip">${quizPassed(L) ? 'Quiz passed' : quizTried(L) ? 'Quiz not passed yet' : 'Quiz not taken'}</span><span class="chip">${L.tag}</span></div></header>
+    <ol class="stones path" style="list-style:none">${lessonStones}${quizStone}</ol>
+    ${nextBox}
+  </div></div>`;
+  addBubbles($('.bubbles-host', main), 14);
+}
+
+function viewLesson(n, m) {
+  const L = LAYERS[n - 1], lesson = L.lessons[m - 1];
+  const nextHref = m < L.lessons.length ? `#/layer/${n}/lesson/${m + 1}` : `#/layer/${n}/quiz`;
+  const nextLabel = m < L.lessons.length ? `Next lesson: ${esc(L.lessons[m].title)}` : 'Take the layer quiz';
+  main.innerHTML = `<div class="view z${n}"><div class="bubbles-host"></div><div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Dive map</a><span aria-hidden="true">/</span><a href="#/layer/${n}">${L.name}</a></nav>
+    <header class="lesson-head"><span class="chip">Lesson ${m} of ${L.lessons.length}, about ${lesson.mins} minutes</span><h1 id="page-h" tabindex="-1">${esc(lesson.title)}</h1>
+      <div class="dots" aria-hidden="true">${L.lessons.map((l, i) => `<i class="${lessonDone(l.id) ? 'on' : i === m - 1 ? 'cur' : ''}"></i>`).join('')}</div></header>
+    <div class="tully">${TURTLE()}<p>${lesson.tip}</p></div>
+    <article class="reading">${lesson.body}</article>
+    <section class="card activity" aria-label="Hands-on activity"><span class="act-label">Hands-on activity</span><div id="act"></div></section>
+    <div class="finish" id="finishbar"></div>
+  </div></div>`;
+  addBubbles($('.bubbles-host', main), 12);
+  let actDone = false;
+  const bar = $('#finishbar');
+  const paint = () => {
+    if (lessonDone(lesson.id)) {
+      bar.innerHTML = `<p class="done-msg">Lesson complete</p><a class="btn primary" href="${nextHref}">${nextLabel}</a>`;
+    } else {
+      bar.innerHTML = `<p class="hint">${actDone ? `Activity complete. Finish the lesson to earn ${XPV.lesson} XP.` : 'Complete the activity above to unlock the finish button.'}</p><button class="btn primary" id="finish" ${actDone ? '' : 'disabled'}>Finish lesson</button>`;
+      const f = $('#finish', bar);
+      if (f) f.onclick = () => { commit(() => { state.lessons[lesson.id] = true; }); burst(bar); bar.style.position = 'relative'; paint(); const a = $('a.btn', bar); if (a) a.focus(); };
+    }
+  };
+  const ctx = { done: () => { if (actDone) return; actDone = true; if (!lessonDone(lesson.id)) paint(); } };
+  ACT[lesson.act]($('#act'), ctx);
+  paint();
+}
+
+function viewQuiz(n) {
+  const L = LAYERS[n - 1], qs = L.quiz;
+  let i = 0, right = 0;
+  main.innerHTML = `<div class="view z${n}"><div class="bubbles-host"></div><div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Dive map</a><span aria-hidden="true">/</span><a href="#/layer/${n}">${L.name}</a></nav>
+    <header class="page-head"><span class="chip">Layer quiz</span><h1 id="page-h" tabindex="-1">${L.name} quiz</h1><p class="lede">Get ${PASS} of ${qs.length} right to clear this layer. Each correct answer earns ${XPV.quizQ} XP.</p></header>
+    <section class="card" id="quiz" aria-live="polite"></section>
+  </div></div>`;
+  addBubbles($('.bubbles-host', main), 12);
+  const box = $('#quiz');
+  const ask = () => {
+    const q = qs[i], opts = shuffle(q.opts.map((t, k) => ({ t, ok: k === q.a })));
+    box.innerHTML = `<div class="q-top"><span>Question ${i + 1} of ${qs.length}</span><span class="q-dots" aria-hidden="true">${qs.map((_, k) => `<i class="${k < i ? 'on' : k === i ? 'cur' : ''}"></i>`).join('')}</span></div>
+      <h2 class="q-text" id="qt">${q.q}</h2>
+      <div class="opts" role="group" aria-labelledby="qt">${opts.map(o => `<button class="opt" data-ok="${o.ok}">${o.t}</button>`).join('')}</div>
+      <div class="q-fb" id="qfb"></div>`;
+    $$('.opt', box).forEach(b => b.onclick = () => {
+      const ok = b.dataset.ok === 'true'; if (ok) right++;
+      $$('.opt', box).forEach(x => { x.disabled = true; if (x.dataset.ok === 'true') x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
+      $('#qfb', box).innerHTML = `<p><strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${q.why}</p><button class="btn primary" id="qn">${i + 1 < qs.length ? 'Next question' : 'See results'}</button>`;
+      const nb = $('#qn', box); nb.onclick = () => { i++; i < qs.length ? ask() : finish(); }; nb.focus();
+    });
+  };
+  const finish = () => {
+    const res = commit(() => { const cur = state.quiz[L.id] || { best: 0, attempts: 0 }; cur.attempts++; cur.best = Math.max(cur.best, right); state.quiz[L.id] = cur; });
+    const pass = right >= PASS, next = LAYERS[n];
+    const msg = right === qs.length ? 'A perfect run. Tully is doing a happy flipper dance.' : pass ? 'Nicely done. You know your stuff.' : 'So close. Review the lessons and give it another go.';
+    box.innerHTML = `<div class="score-card">${TURTLE('')}<p class="q-top" style="width:100%"><span>Results</span></p><p class="score-big">${right} of ${qs.length}</p><p><strong>${pass ? 'Layer cleared!' : 'Not cleared yet.'}</strong> ${msg}</p>
+      <div class="btn-row">${pass ? `<a class="btn primary" href="${next ? '#/layer/' + next.id : '#/abyss'}">${next ? 'Descend to the ' + next.name : 'Enter the Trench'}</a>` : `<button class="btn primary" id="retry">Try again</button>`}${pass ? '<button class="btn ghost" id="retry">Retake for a better score</button>' : `<a class="btn ghost" href="#/layer/${n}/lesson/1">Review lessons</a>`}<a class="btn ghost" href="#/layer/${n}">Back to layer</a></div></div>`;
+    $('#retry', box).onclick = () => { i = 0; right = 0; ask(); };
+    const svg = $('.score-card svg', box); if (svg) svg.style.cssText = 'width:110px;height:70px';
+    if (res.newlyCleared) setTimeout(() => showClearModal(res.newlyCleared), 500);
+  };
+  ask();
+}
+
+function viewLog() {
+  const xp = totalXP(), li = levelInfo(xp);
+  const stepsDone = LAYERS.reduce((s, L) => s + lessonCount(L) + (quizPassed(L) ? 1 : 0), 0) + (capDone() ? 1 : 0);
+  const stepsTotal = LAYERS.reduce((s, L) => s + L.lessons.length + 1, 0) + 1;
+  const pct = Math.round(stepsDone / stepsTotal * 100), C = 2 * Math.PI * 58;
+  const deepest = capDone() || trenchOpen() ? TRENCH.name : (LAYERS.filter(unlocked).slice(-1)[0]).name;
+  const rows = LAYERS.map(L => `<div class="lrow"><div><strong>${L.name}</strong><div class="fine" style="margin:0">${L.depth}</div></div>
+    <div class="segbar" role="img" aria-label="${lessonCount(L)} of ${L.lessons.length} lessons done, quiz ${quizPassed(L) ? 'passed' : 'not passed'}">${L.lessons.map(l => `<i class="${lessonDone(l.id) ? 'on' : ''}"></i>`).join('')}<i class="q ${quizPassed(L) ? 'on' : ''}"></i></div>
+    <span class="chip">${!unlocked(L) ? 'Locked' : cleared(L) ? 'Cleared' : `${lessonCount(L)}/${L.lessons.length} lessons`}${quizTried(L) ? `, quiz ${quizBest(L)}/${L.quiz.length}` : ''}</span></div>`).join('')
+    + `<div class="lrow"><div><strong>${TRENCH.name}</strong><div class="fine" style="margin:0">Capstone</div></div><div class="segbar"><i class="q ${capDone() ? 'on' : ''}"></i></div><span class="chip">${capDone() ? 'Pledge signed' : trenchOpen() ? 'Open' : 'Locked'}</span></div>`;
+  main.innerHTML = `<div class="view z3"><div class="bubbles-host"></div><div class="wrap">
+    <header class="page-head"><span class="chip">Progress dashboard</span><h1 id="page-h" tabindex="-1">Your dive log</h1><p class="lede">Track your XP, level, and badges, and see how deep you have gone.</p></header>
+    <div class="log-grid">
+      <section class="card level-card" aria-label="Level and experience points">
+        <p class="fine" style="margin:0">Current level</p>
+        <p class="lv">Level ${li.cur.n}: ${li.cur.name}</p>
+        <div class="xpbar" role="img" aria-label="${Math.round(li.pct * 100)} percent to next level"><i style="width:${Math.round(li.pct * 100)}%"></i></div>
+        <p><strong>${xp} XP</strong> earned${li.next ? `. ${li.next.xp - xp} XP to reach ${li.next.name}.` : '. You reached the top level!'}</p>
+        <p class="fine" style="margin:0">Deepest layer opened: <strong>${deepest}</strong></p>
+      </section>
+      <section class="card ring-card" aria-label="Overall completion">
+        <div class="ring"><svg viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="58" fill="none" stroke="var(--inset)" stroke-width="14"/><circle cx="75" cy="75" r="58" fill="none" stroke="#2bd08a" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pct / 100)}"/></svg><b>${pct}%</b></div>
+        <p><strong>${stepsDone} of ${stepsTotal}</strong> steps complete</p>
+      </section>
+    </div>
+    <section class="card" style="margin-top:20px" aria-label="Layer progress"><h2 style="font-size:1.5rem">Layer progress</h2><p class="fine" style="margin-top:4px">Green bars are lessons. The gold bar is the quiz or pledge.</p><div class="layer-rows">${rows}</div></section>
+    <h2 class="section-title">Badges <span class="fine" style="font-size:1rem;font-weight:600">${state.badges.length} of ${BADGES.length} collected</span></h2>
+    <div class="badges">${BADGES.map(b => { const on = state.badges.includes(b.id); return `<div class="badge ${on ? '' : 'off'}"><span class="gem" aria-hidden="true">${b.icon}</span><strong>${b.name}</strong><small>${on ? 'Earned' : b.hint}</small></div>`; }).join('')}</div>
+    <section class="card no-print" style="margin-top:30px"><h2 style="font-size:1.4rem">Your diver profile</h2>
+      <div class="name-row"><div class="field"><label for="nm">Diver name (shown on your certificate)</label><input type="text" id="nm" maxlength="40" placeholder="Type your name" value="${esc(state.name)}"></div><button class="btn ghost" id="reset">Reset all progress</button></div></section>
+  </div></div>`;
+  addBubbles($('.bubbles-host', main), 10);
+  $('#nm').addEventListener('input', e => { state.name = e.target.value; save(); });
+  $('#reset').onclick = () => showModal({
+    title: 'Reset your dive?', text: 'This clears all XP, badges, and progress in this browser. You cannot undo it.',
+    actions: [{ label: 'Yes, reset everything', primary: true, fn: () => { state = defaults(); save(); renderHUD(); toast('Progress reset'); location.hash = '#/'; render(); } }, { label: 'Keep my progress' }]
+  });
+}
+
+function viewAbyss() {
+  const done = capDone();
+  const picks = new Set(done ? state.capstone.pledges : []);
+  main.innerHTML = `<div class="view z4"><div class="bubbles-host"></div><div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Dive map</a><span aria-hidden="true">/</span><span>${TRENCH.name}</span></nav>
+    <header class="page-head"><span class="chip">${TRENCH.depth}</span><h1 id="page-h" tabindex="-1">${TRENCH.name}</h1><p class="lede">${done ? 'You signed the pledge. Here is your certificate.' : 'You made it to the bottom. Choose at least three promises that you will keep, add your name, and sign to surface as a Sea Sage.'}</p></header>
+    <div class="tully">${TURTLE()}<p><b>Tully says:</b> ${done ? 'I knew you could do it. Now keep these promises when you head back up.' : 'Look how far you have come! One last thing to do down here.'}</p></div>
+    <section class="card no-print" id="pledge-card" ${done ? 'hidden' : ''}>
+      <h2 style="font-size:1.5rem">My AI pledge</h2>
+      <div class="pledges" role="group" aria-label="Choose your promises">${PLEDGES.map((p, k) => `<label class="pledge"><input type="checkbox" value="${k}" ${picks.has(k) ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div>
+      <div class="field" style="margin-top:22px"><label for="signname">Your name</label><input type="text" id="signname" maxlength="40" placeholder="Type your name" value="${esc(state.name)}"></div>
+      <div class="btn-row" style="margin-top:20px"><button class="btn primary" id="sign" disabled>Sign and surface</button><span class="fine" id="signhint" style="margin:0">Pick at least 3 promises and enter your name.</span></div>
+    </section>
+    <div id="cert-wrap"></div>
+  </div></div>`;
+  addBubbles($('.bubbles-host', main), 12);
+  const card = $('#pledge-card'), sign = $('#sign');
+  const checks = $$('input[type=checkbox]', main), nm = $('#signname');
+  const upd = () => { const n = checks.filter(c => c.checked).length; sign.disabled = !(n >= 3 && nm.value.trim().length >= 1); $('#signhint').textContent = n < 3 ? `Pick at least 3 promises (${n} so far).` : nm.value.trim() ? 'Ready to sign.' : 'Enter your name to sign.'; };
+  checks.forEach(c => c.addEventListener('change', upd)); nm.addEventListener('input', upd); upd();
+  const showCert = () => {
+    const c = state.capstone;
+    $('#cert-wrap').innerHTML = `<div class="cert" id="cert">${TURTLE('t')}<p class="cert-small">Deep Dive AI learning portal</p><h2>Certificate of Descent</h2><p>This certifies that</p><p class="cert-name">${esc(c.name)}</p>
+      <p>cleared the Sunlight, Twilight, and Midnight zones and pledged to use AI with curiosity, honesty, and care.</p>
+      <ul>${c.pledges.map(k => `<li>${esc(PLEDGES[k])}</li>`).join('')}</ul>
+      <p class="cert-foot">Level ${levelInfo(totalXP()).cur.n}: ${levelInfo(totalXP()).cur.name}, ${totalXP()} XP, ${new Date(c.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p></div>
+      <div class="btn-row no-print" style="margin-top:20px"><button class="btn primary" id="print">Print certificate</button><a class="btn ghost" href="#/log">View dive log</a></div>`;
+    $('#print').onclick = () => { try { window.print(); } catch (e) { toast('Printing is not available here'); } };
+  };
+  sign.onclick = () => {
+    const name = nm.value.trim(), pledges = checks.filter(c => c.checked).map(c => +c.value);
+    commit(() => { state.name = name; state.capstone = { done: true, name, pledges, date: Date.now() }; });
+    card.hidden = true; showCert(); burst($('#cert-wrap'));
+    showModal({ title: 'You surfaced as a Sea Sage!', text: `Pledge signed. You earned +${XPV.capstone} XP and your certificate is ready.`, actions: [{ label: 'View my certificate', primary: true }] });
+  };
+  if (done) showCert();
+}
+
+/* ============================================================
+   Router
+============================================================ */
+function render() {
+  const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  let nav = 'home';
+  const bail = (msg) => { toast(msg); location.hash = '#/'; };
+  teardownGauge();
+  window.scrollTo(0, 0);
+  if (!parts.length) { viewHome(); }
+  else if (parts[0] === 'log') { nav = 'log'; viewLog(); }
+  else if (parts[0] === 'abyss') {
+    if (!trenchOpen()) return bail('Clear all three layers to reach the Trench');
+    nav = 'home'; viewAbyss();
+  }
+  else if (parts[0] === 'layer' && LAYERS[+parts[1] - 1]) {
+    const n = +parts[1], L = LAYERS[n - 1];
+    if (!unlocked(L)) return bail(`Clear the ${LAYERS[n - 2].name} to unlock the ${L.name}`);
+    if (!parts[2]) viewLayer(n);
+    else if (parts[2] === 'lesson' && L.lessons[+parts[3] - 1]) viewLesson(n, +parts[3]);
+    else if (parts[2] === 'quiz') { if (!quizOpen(L)) { toast('Finish all lessons to unlock the quiz'); location.hash = `#/layer/${n}`; return; } viewQuiz(n); }
+    else return bail('That page does not exist');
+  }
+  else { viewHome(); }
+  $$('.nav a').forEach(a => { if (a.dataset.nav === nav) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  const h = $('#page-h') || $('h1', main);
+  if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+}
+
+window.addEventListener('hashchange', render);
+renderHUD();
+checkBadges(); save();
+render();
+})();
+</script>
+</body>
+</html>
